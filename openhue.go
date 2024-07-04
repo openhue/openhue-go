@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	sp "github.com/deepmap/oapi-codegen/pkg/securityprovider"
+	sp "github.com/oapi-codegen/oapi-codegen/v2/pkg/securityprovider"
 	"log/slog"
 	"net/http"
 )
