@@ -100,6 +100,21 @@ func (h *Home) GetDevices() (map[string]DeviceGet, error) {
 	return devices, nil
 }
 
+func (h *Home) GetDeviceById(deviceId string) (*DeviceGet, error) {
+	resp, err := h.api.GetDeviceWithResponse(context.Background(), deviceId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+
+	return &data[0], nil
+}
+
 //--------------------------------------------------------------------------------------------------------------------//
 // ROOM
 //--------------------------------------------------------------------------------------------------------------------//
@@ -122,6 +137,14 @@ func (h *Home) GetRooms() (map[string]RoomGet, error) {
 	}
 
 	return rooms, nil
+}
+
+func (r *RoomGet) GetServices() map[string]ResourceIdentifierRtype {
+	services := make(map[string]ResourceIdentifierRtype)
+	for _, s := range *r.Services {
+		services[*s.Rid] = *s.Rtype
+	}
+	return services
 }
 
 //--------------------------------------------------------------------------------------------------------------------//
@@ -187,6 +210,21 @@ func (h *Home) GetGroupedLights() (map[string]GroupedLightGet, error) {
 	}
 
 	return lights, nil
+}
+
+func (h *Home) GetGroupedLightById(groupedLightId string) (*GroupedLightGet, error) {
+	resp, err := h.api.GetGroupedLightWithResponse(context.Background(), groupedLightId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+
+	return &data[0], nil
 }
 
 func (l *GroupedLightGet) IsOn() bool {
