@@ -10,7 +10,7 @@ OpenHue Go is a library written in Goland for interacting with the Philips Hue s
 ## Usage
 Use the following command to import the library: 
 ```shell
-go get github.com/openhue/openhue-go
+go get -u github.com/openhue/openhue-go
 ```
 And check the following example that toggles all the rooms of your house:
 ```go
