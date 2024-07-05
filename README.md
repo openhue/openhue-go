@@ -1,5 +1,6 @@
 # OpenHue Go
 [![Build](https://github.com/openhue/openhue-go/actions/workflows/build.yml/badge.svg)](https://github.com/openhue/openhue-go/actions/workflows/build.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ad99c96b6cbb59d2b81b/maintainability)](https://codeclimate.com/github/openhue/openhue-go/maintainability)
 [![Go Reference](https://pkg.go.dev/badge/github.com/openhue/openhue-go.svg)](https://pkg.go.dev/github.com/openhue/openhue-go)
 
 ## Overview
