@@ -7,35 +7,32 @@
 OpenHue Go is a library written in Goland for interacting with the Philips Hue smart lighting systems.
 
 ## Usage
+Use the following command to import the library: 
+```shell
+go get github.com/openhue/openhue-go
+```
 
 ```go
 package main
 
-import "os"
 import "github.com/openhue/openhue-go"
+import "os"
 import "log"
 
 func main() {
 
-	home, err := openhue.NewHome(os.Getenv("BRIDGE"), os.Getenv("KEY"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	home, _ := openhue.NewHome(os.Getenv("BRIDGE"), os.Getenv("KEY"))
+	lights, _ := home.GetLights()
 
-	lights, err := home.GetLights()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, light := range lights {
-
-		body := openhue.UpdateLightJSONRequestBody{
-			On: light.On.Switch(),
-		}
-		home.SetLight(*light.Id, body)
+	for id, light := range lights {
+		fmt.Printf("Toggling light %s (%s)\n", *light.Metadata.Name, id)
+		home.UpdateLight(*light.Id, openhue.LightPut{
+			On: light.Toggle(),
+		})
 	}
 }
 ```
+This example demonstrates how to toggle all the lights of your house, in a very few lines of code.
 
 ## License
 [![GitHub License](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)

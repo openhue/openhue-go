@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/openhue/openhue-go"
 	"gopkg.in/yaml.v3"
 	"log"
@@ -21,14 +22,11 @@ func main() {
 		return
 	}
 
-	for _, light := range lights {
-
-		if *light.Metadata.Name == "Bureau" {
-			body := openhue.UpdateLightJSONRequestBody{
-				On: light.On.Switch(),
-			}
-			home.SetLight(*light.Id, body)
-		}
+	for id, light := range lights {
+		fmt.Printf("Toggling light %s (%s)\n", *light.Metadata.Name, id)
+		home.UpdateLight(*light.Id, openhue.LightPut{
+			On: light.Toggle(),
+		})
 	}
 }
 
