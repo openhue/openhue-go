@@ -6,8 +6,6 @@
 ## Overview
 OpenHue Go is a library written in Goland for interacting with the Philips Hue smart lighting systems.
 
-![The OpenHue Go Logo](./docs/logo.png)
-
 ## Usage
 Use the following command to import the library: 
 ```shell
