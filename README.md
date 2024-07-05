@@ -51,6 +51,6 @@ func main() {
 ## License
 [![GitHub License](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
 
-Open-Hue is distributed under the [Apache License 2.0](http://www.apache.org/licenses/),
+OpenHue is distributed under the [Apache License 2.0](http://www.apache.org/licenses/),
 making it open and free for anyone to use and contribute to.
 See the [license](./LICENSE) file for detailed terms.
