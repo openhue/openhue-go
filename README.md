@@ -3,6 +3,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/ad99c96b6cbb59d2b81b/maintainability)](https://codeclimate.com/github/openhue/openhue-go/maintainability)
 [![Go Reference](https://pkg.go.dev/badge/github.com/openhue/openhue-go.svg)](https://pkg.go.dev/github.com/openhue/openhue-go)
 [![Go project version](https://badge.fury.io/go/github.com%2Fopenhue%2Fopenhue-go.svg)](https://badge.fury.io/go/github.com%2Fopenhue%2Fopenhue-go)
+[![GitHub Repo stars](https://img.shields.io/github/stars/openhue/openhue-go)](https://github.com/openhue/openhue-go/stargazers)
 
 ## Overview
 OpenHue Go is a library written in Goland for interacting with the Philips Hue smart lighting systems.
