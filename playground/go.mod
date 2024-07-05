@@ -1,8 +1,8 @@
-module github.com/openhue/openhue-go/internal/playground
+module github.com/openhue/openhue-go/playground
 
 go 1.22
 
-replace github.com/openhue/openhue-go => ../..
+replace github.com/openhue/openhue-go => ..
 
 require (
 	github.com/openhue/openhue-go v0.1.0
