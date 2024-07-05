@@ -11,28 +11,41 @@ Use the following command to import the library:
 ```shell
 go get github.com/openhue/openhue-go
 ```
-
+And check the following example that toggles all the rooms of your house:
 ```go
 package main
 
-import "github.com/openhue/openhue-go"
-import "os"
-import "log"
+import (
+	"fmt"
+	"github.com/openhue/openhue-go"
+	"log"
+)
 
 func main() {
 
-	home, _ := openhue.NewHome(os.Getenv("BRIDGE"), os.Getenv("KEY"))
-	lights, _ := home.GetLights()
+	home, _ := openhue.NewHome(openhue.LoadConf())
+	rooms, _ := home.GetRooms()
 
-	for id, light := range lights {
-		fmt.Printf("Toggling light %s (%s)\n", *light.Metadata.Name, id)
-		home.UpdateLight(*light.Id, openhue.LightPut{
-			On: light.Toggle(),
-		})
+	for id, room := range rooms {
+
+		fmt.Printf("> Toggling room %s (%s)\n", *room.Metadata.Name, id)
+
+		for serviceId, serviceType := range room.GetServices() {
+
+			if serviceType == openhue.ResourceIdentifierRtypeGroupedLight {
+				groupedLight, _ := home.GetGroupedLightById(serviceId)
+
+				home.UpdateGroupedLight(*groupedLight.Id, openhue.GroupedLightPut{
+					On: groupedLight.Toggle(),
+				})
+			}
+		}
 	}
 }
 ```
-This example demonstrates how to toggle all the lights of your house, in a very few lines of code.
+> [!NOTE]  
+> The `openhue.LoadConf()` function allows loading the configuration from the well-known configuration file.
+> Please refer to [this guide](https://www.openhue.io/cli/setup#manual-configuration) for more information.
 
 ## License
 [![GitHub License](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
