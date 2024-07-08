@@ -51,6 +51,35 @@ func main() {
 > The `openhue.LoadConf()` function allows loading the configuration from the well-known configuration file.
 > Please refer to [this guide](https://www.openhue.io/cli/setup#manual-configuration) for more information.
 
+### Bridge Discovery
+Bridge Discovery on the local network has been made easy through the `BridgeDiscovery` helper: 
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/openhue/openhue-go"
+	"log"
+	"time"
+)
+
+func main() {
+
+	bridge, err := openhue.NewBridgeDiscovery(openhue.WithTimeout(1 * time.Second)).Discover()
+	if err != nil {
+		log.Fatal("Bridge Discovery Error: ", err)
+	}
+
+	fmt.Println(bridge) // Output: Bridge{instance: "Hue Bridge - 1A3E4F", host: "ecb5fa1a3e4f.local.", ip: "192.168.1.xx"}
+}
+```
+The `BridgeDiscovery.Discover()` function will first try to discover your local bridge via mDNS, 
+and if that fails then it tries using [discovery.meethue.com](https://discovery.meethue.com) URL.
+
+Options:
+- `openhue.WithTimeout` allows setting the mDNS discovery timeout. Default value is `5` seconds.
+- `openhue.WithDisabledUrlDiscovery` allows disabling the URL discovery.
+
 ## License
 [![GitHub License](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
 
