@@ -3,20 +3,15 @@ package main
 import (
 	"fmt"
 	"github.com/openhue/openhue-go"
-	"log"
 )
 
 func main() {
 
 	home, err := openhue.NewHome(openhue.LoadConf())
-	if err != nil {
-		log.Fatal(err)
-	}
+	openhue.CheckErr(err)
 
 	lights, err := home.GetLights()
-	if err != nil {
-		return
-	}
+	openhue.CheckErr(err)
 
 	for id, light := range lights {
 
