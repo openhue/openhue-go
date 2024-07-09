@@ -1,6 +1,7 @@
 package openhue
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"
@@ -33,4 +34,12 @@ func LoadConf() (string, string) {
 	}
 
 	return c["bridge"].(string), c["key"].(string)
+}
+
+// CheckErr prints the msg with the prefix 'Error:' and exits with error code 1. If the msg is a nil, it does nothing.
+func CheckErr(msg error) {
+	if msg != nil {
+		fmt.Fprintln(os.Stderr, "Error:", msg)
+		os.Exit(1)
+	}
 }

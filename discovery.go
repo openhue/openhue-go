@@ -17,7 +17,7 @@ const (
 	discoveryUrl   = "https://discovery.meethue.com"
 )
 
-type opt func(b *BridgeDiscovery)
+type discOpt func(b *BridgeDiscovery)
 
 type BridgeDiscovery struct {
 	timeout                   time.Duration
@@ -46,7 +46,7 @@ const (
 	TooManyAttempts BridgeDiscoveryError = "too many attempts to discover the bridge via URL"
 )
 
-func NewBridgeDiscovery(opts ...opt) *BridgeDiscovery {
+func NewBridgeDiscovery(opts ...discOpt) *BridgeDiscovery {
 	bd := &BridgeDiscovery{
 		timeout:                   defaultTimeout,
 		allowUrlDiscoveryFallback: true,
@@ -152,14 +152,14 @@ func urlDiscovery() (*BridgeInfo, error) {
 }
 
 // WithTimeout specifies that timeout value for the Bridge Discovery. Default is 5 seconds.
-func WithTimeout(timeout time.Duration) opt {
+func WithTimeout(timeout time.Duration) discOpt {
 	return func(b *BridgeDiscovery) {
 		b.timeout = timeout
 	}
 }
 
 // WithDisabledUrlDiscovery allows disabling the URL discovery process in case the mDNS one failed.
-func WithDisabledUrlDiscovery() opt {
+func WithDisabledUrlDiscovery() discOpt {
 	return func(b *BridgeDiscovery) {
 		b.allowUrlDiscoveryFallback = false
 	}

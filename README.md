@@ -66,9 +66,7 @@ import (
 func main() {
 
 	bridge, err := openhue.NewBridgeDiscovery(openhue.WithTimeout(1 * time.Second)).Discover()
-	if err != nil {
-		log.Fatal("Bridge Discovery Error: ", err)
-	}
+	openhue.CheckErr(err)
 
 	fmt.Println(bridge) // Output: Bridge{instance: "Hue Bridge - 1A3E4F", host: "ecb5fa1a3e4f.local.", ip: "192.168.1.xx"}
 }
@@ -79,6 +77,56 @@ and if that fails then it tries using [discovery.meethue.com](https://discovery.
 Options:
 - `openhue.WithTimeout` allows setting the mDNS discovery timeout. Default value is `5` seconds.
 - `openhue.WithDisabledUrlDiscovery` allows disabling the URL discovery.
+
+### Authentication
+Bridge authentication has been make simple via the `Authenticator` interface:
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/openhue/openhue-go"
+	"time"
+)
+
+func main() {
+
+	bridge, err := openhue.NewBridgeDiscovery(openhue.WithTimeout(1 * time.Second)).Discover()
+	openhue.CheckErr(err)
+
+	authenticator, err := openhue.NewAuthenticator(bridge.IpAddress)
+	openhue.CheckErr(err)
+
+	fmt.Println("Press the link button")
+
+	var key string
+	for len(key) == 0 {
+
+		// try to authenticate
+		apiKey, retry, err := authenticator.Authenticate()
+
+		if err != nil && retry {
+			// link button not pressed
+			fmt.Printf(".")
+			time.Sleep(500 * time.Millisecond)
+		} else if err != nil && !retry {
+			// there is a real error
+			openhue.CheckErr(err)
+		} else {
+			key = apiKey
+		}
+	}
+
+	fmt.Println("\n", key)
+}
+```
+In this example, we wait until the link button is pressed on the bridge. 
+The `Authenticator.Authenticate()` function returns three values:
+- `apiKey string` that is not empty when `retry = false` and `err == nil`
+- `retry bool` which indicates that the link button has not been pressed
+- `err error` which contains the error details
+
+**You can consider the authentication has failed whenever the `retry` value is `false` and the `err` is not `nil`.**
 
 ## License
 [![GitHub License](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)

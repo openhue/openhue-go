@@ -289,13 +289,21 @@ func (h *Home) UpdateScene(sceneId string, body ScenePut) error {
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
 func newClient(bridgeIP, apiKey string) (*ClientWithResponses, error) {
 
-	apiKeyAuth := func(ctx context.Context, req *http.Request) error {
-		req.Header.Set("hue-application-key", apiKey)
-		return nil
+	var authFn RequestEditorFn
+
+	if len(apiKey) > 0 {
+		authFn = func(ctx context.Context, req *http.Request) error {
+			req.Header.Set("hue-application-key", apiKey)
+			return nil
+		}
+	} else {
+		authFn = func(ctx context.Context, req *http.Request) error {
+			return nil
+		}
 	}
 
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	return NewClientWithResponses("https://"+bridgeIP, WithRequestEditorFn(apiKeyAuth))
+	return NewClientWithResponses("https://"+bridgeIP, WithRequestEditorFn(authFn))
 }
