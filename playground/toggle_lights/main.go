@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	home, err := openhue.NewHome(openhue.LoadConf())
+	home, err := openhue.NewHome(openhue.LoadConfNoError())
 	openhue.CheckErr(err)
 
 	lights, err := home.GetLights()
