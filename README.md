@@ -27,7 +27,7 @@ import (
 
 func main() {
 
-	home, _ := openhue.NewHome(openhue.LoadConf())
+	home, _ := openhue.NewHome(openhue.LoadConfNoError())
 	rooms, _ := home.GetRooms()
 
 	for id, room := range rooms {
