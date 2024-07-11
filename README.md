@@ -2,6 +2,7 @@
 ![OpenHue Go Logo Medium Size](./docs/logo-md.png)
 
 [![Build](https://github.com/openhue/openhue-go/actions/workflows/build.yml/badge.svg)](https://github.com/openhue/openhue-go/actions/workflows/build.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/openhue/openhue-go)](https://goreportcard.com/report/github.com/openhue/openhue-go)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ad99c96b6cbb59d2b81b/maintainability)](https://codeclimate.com/github/openhue/openhue-go/maintainability)
 [![Go Reference](https://pkg.go.dev/badge/github.com/openhue/openhue-go.svg)](https://pkg.go.dev/github.com/openhue/openhue-go)
 
