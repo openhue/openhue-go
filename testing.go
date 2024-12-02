@@ -301,3 +301,38 @@ func (c *ClientWithResponsesMock) UpdateZoneWithResponse(ctx context.Context, zo
 	args := c.Called(ctx, zoneId, body, reqEditors)
 	return args.Get(0).(*UpdateZoneResponse), args.Error(1)
 }
+
+func (c *ClientWithResponsesMock) GetSmartScenesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSmartScenesResponse, error) {
+	args := c.Called(ctx, reqEditors)
+	return args.Get(0).(*GetSmartScenesResponse), args.Error(1)
+}
+
+func (c *ClientWithResponsesMock) CreateSmartSceneWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSmartSceneResponse, error) {
+	args := c.Called(ctx, contentType, body, reqEditors)
+	return args.Get(0).(*CreateSmartSceneResponse), args.Error(1)
+}
+
+func (c *ClientWithResponsesMock) CreateSmartSceneWithResponse(ctx context.Context, body CreateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSmartSceneResponse, error) {
+	args := c.Called(ctx, body, reqEditors)
+	return args.Get(0).(*CreateSmartSceneResponse), args.Error(1)
+}
+
+func (c *ClientWithResponsesMock) DeleteSmartSceneWithResponse(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*DeleteSmartSceneResponse, error) {
+	args := c.Called(ctx, sceneId, reqEditors)
+	return args.Get(0).(*DeleteSmartSceneResponse), args.Error(1)
+}
+
+func (c *ClientWithResponsesMock) GetSmartSceneWithResponse(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*GetSmartSceneResponse, error) {
+	args := c.Called(ctx, sceneId, reqEditors)
+	return args.Get(0).(*GetSmartSceneResponse), args.Error(1)
+}
+
+func (c *ClientWithResponsesMock) UpdateSmartSceneWithBodyWithResponse(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSmartSceneResponse, error) {
+	args := c.Called(ctx, sceneId, contentType, body, reqEditors)
+	return args.Get(0).(*UpdateSmartSceneResponse), args.Error(1)
+}
+
+func (c *ClientWithResponsesMock) UpdateSmartSceneWithResponse(ctx context.Context, sceneId string, body UpdateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSmartSceneResponse, error) {
+	args := c.Called(ctx, sceneId, body, reqEditors)
+	return args.Get(0).(*UpdateSmartSceneResponse), args.Error(1)
+}
