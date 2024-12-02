@@ -429,6 +429,45 @@ const (
 	SignalingSignalOnOffColor  SignalingSignal = "on_off_color"
 )
 
+// Defines values for SmartSceneGetState.
+const (
+	Active   SmartSceneGetState = "active"
+	Inactive SmartSceneGetState = "inactive"
+)
+
+// Defines values for SmartSceneGetType.
+const (
+	SmartSceneGetTypeSmartScene SmartSceneGetType = "smart_scene"
+)
+
+// Defines values for SmartSceneOptionalRecallAction.
+const (
+	SmartSceneOptionalRecallActionActivate   SmartSceneOptionalRecallAction = "activate"
+	SmartSceneOptionalRecallActionDeactivate SmartSceneOptionalRecallAction = "deactivate"
+)
+
+// Defines values for SmartScenePostType.
+const (
+	SmartScenePostTypeSmartScene SmartScenePostType = "smart_scene"
+)
+
+// Defines values for SmartScenePutType.
+const (
+	SmartScene SmartScenePutType = "smart_scene"
+)
+
+// Defines values for SmartSceneRecallAction.
+const (
+	SmartSceneRecallActionActivate   SmartSceneRecallAction = "activate"
+	SmartSceneRecallActionDeactivate SmartSceneRecallAction = "deactivate"
+)
+
+// Defines values for SmartSceneTimeslotGetStartTimeKind.
+const (
+	Sunset SmartSceneTimeslotGetStartTimeKind = "sunset"
+	Time   SmartSceneTimeslotGetStartTimeKind = "time"
+)
+
 // Defines values for SupportedDynamicStatus.
 const (
 	DynamicPalette SupportedDynamicStatus = "dynamic_palette"
@@ -472,6 +511,17 @@ const (
 	Temperature TemperaturePutType = "temperature"
 )
 
+// Defines values for Weekday.
+const (
+	Friday    Weekday = "friday"
+	Monday    Weekday = "monday"
+	Saturday  Weekday = "saturday"
+	Sunday    Weekday = "sunday"
+	Thursday  Weekday = "thursday"
+	Tuesday   Weekday = "tuesday"
+	Wednesday Weekday = "wednesday"
+)
+
 // ActionGet defines model for ActionGet.
 type ActionGet struct {
 	// Action The action to be executed on recall
@@ -511,8 +561,8 @@ type ActionPost struct {
 			// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
 			Mirek *Mirek `json:"mirek,omitempty"`
 		} `json:"color_temperature,omitempty"`
-		Dimming  *Dimming   `json:"dimming,omitempty"`
-		Dynamics *Dynamics2 `json:"dynamics,omitempty"`
+		Dimming  *Dimming  `json:"dimming,omitempty"`
+		Dynamics *Dynamics `json:"dynamics,omitempty"`
 
 		// Effects Basic feature containing effect properties.
 		Effects *struct {
@@ -628,6 +678,12 @@ type ColorTemperaturePalettePost struct {
 		Mirek *Mirek `json:"mirek,omitempty"`
 	} `json:"color_temperature,omitempty"`
 	Dimming *Dimming `json:"dimming,omitempty"`
+}
+
+// DayTimeslotsGet defines model for DayTimeslotsGet.
+type DayTimeslotsGet struct {
+	Recurrence []Weekday               `json:"recurrence"`
+	Timeslots  []SmartSceneTimeslotGet `json:"timeslots"`
 }
 
 // DeviceGet defines model for DeviceGet.
@@ -750,17 +806,6 @@ type DimmingDeltaAction string
 type Dynamics struct {
 	// Duration Duration of a light transition or timed effects in ms.
 	Duration *int `json:"duration,omitempty"`
-
-	// Speed Speed of dynamic palette or effect.
-	// The speed is valid for the dynamic palette if the status is `dynamic_palette` or for the corresponding effect listed in status.
-	// In case of status `none`, the speed is not valid.
-	Speed *float32 `json:"speed,omitempty"`
-}
-
-// Dynamics2 defines model for Dynamics-2.
-type Dynamics2 struct {
-	// Duration Duration of a light transition or timed effects in ms.
-	Duration *int `json:"duration,omitempty"`
 }
 
 // Effects Basic feature containing effect properties.
@@ -832,7 +877,7 @@ type GroupedLightPut struct {
 	ColorTemperatureDelta *ColorTemperatureDelta `json:"color_temperature_delta,omitempty"`
 	Dimming               *Dimming               `json:"dimming,omitempty"`
 	DimmingDelta          *DimmingDelta          `json:"dimming_delta,omitempty"`
-	Dynamics              *Dynamics2             `json:"dynamics,omitempty"`
+	Dynamics              *Dynamics              `json:"dynamics,omitempty"`
 	On                    *On                    `json:"on,omitempty"`
 
 	// Signaling Feature containing basic signaling properties.
@@ -847,6 +892,17 @@ type GroupedLightPutType string
 
 // LightArchetype Light archetype
 type LightArchetype string
+
+// LightDynamics defines model for LightDynamics.
+type LightDynamics struct {
+	// Duration Duration of a light transition or timed effects in ms.
+	Duration *int `json:"duration,omitempty"`
+
+	// Speed Speed of dynamic palette or effect.
+	// The speed is valid for the dynamic palette if the status is `dynamic_palette` or for the corresponding effect listed in status.
+	// In case of status `none`, the speed is not valid.
+	Speed *float32 `json:"speed,omitempty"`
+}
 
 // LightGet defines model for LightGet.
 type LightGet struct {
@@ -1099,7 +1155,7 @@ type LightPut struct {
 	ColorTemperatureDelta *ColorTemperatureDelta `json:"color_temperature_delta,omitempty"`
 	Dimming               *Dimming               `json:"dimming,omitempty"`
 	DimmingDelta          *DimmingDelta          `json:"dimming_delta,omitempty"`
-	Dynamics              *Dynamics              `json:"dynamics,omitempty"`
+	Dynamics              *LightDynamics         `json:"dynamics,omitempty"`
 
 	// Effects Basic feature containing effect properties.
 	Effects *Effects `json:"effects,omitempty"`
@@ -1516,6 +1572,127 @@ type Signaling struct {
 // - `alternating`: Alternates between 2 provided colors.
 type SignalingSignal string
 
+// SmartSceneGet defines model for SmartSceneGet.
+type SmartSceneGet struct {
+	// ActiveTimeslot the active time slot in execution
+	ActiveTimeslot *struct {
+		TimeslotId int     `json:"timeslot_id"`
+		Weekday    Weekday `json:"weekday"`
+	} `json:"active_timeslot,omitempty"`
+	Group ResourceIdentifier `json:"group"`
+
+	// Id Unique identifier representing a specific resource instance
+	Id *string `json:"id,omitempty"`
+
+	// IdV1 Clip v1 resource identifier
+	IdV1     *string                     `json:"id_v1,omitempty"`
+	Metadata SmartSceneMetadataWithImage `json:"metadata"`
+
+	// State the current state of the smart scene. The default state is inactive if no recall is provided
+	State SmartSceneGetState `json:"state"`
+
+	// TransitionDuration duration of the transition from on one timeslot's scene to the other (defaults to 60000ms)
+	TransitionDuration int                `json:"transition_duration"`
+	Type               *SmartSceneGetType `json:"type,omitempty"`
+
+	// WeekTimeslots information on what is the light state for every timeslot of the day
+	WeekTimeslots []DayTimeslotsGet `json:"week_timeslots"`
+}
+
+// SmartSceneGetState the current state of the smart scene. The default state is inactive if no recall is provided
+type SmartSceneGetState string
+
+// SmartSceneGetType defines model for SmartSceneGet.Type.
+type SmartSceneGetType string
+
+// SmartSceneMetadata defines model for SmartSceneMetadata.
+type SmartSceneMetadata struct {
+	// Appdata Application specific data. Free format string.
+	Appdata *string `json:"appdata,omitempty"`
+
+	// Name Human readable name of a resource
+	Name *string `json:"name,omitempty"`
+}
+
+// SmartSceneMetadataWithImage defines model for SmartSceneMetadataWithImage.
+type SmartSceneMetadataWithImage struct {
+	// Appdata Application specific data. Free format string.
+	Appdata *string             `json:"appdata,omitempty"`
+	Image   *ResourceIdentifier `json:"image,omitempty"`
+
+	// Name Human readable name of a resource
+	Name *string `json:"name,omitempty"`
+}
+
+// SmartSceneOptionalRecall defines model for SmartSceneOptionalRecall.
+type SmartSceneOptionalRecall struct {
+	// Action Activate will start the smart (24h) scene; deactivate will stop it
+	Action *SmartSceneOptionalRecallAction `json:"action,omitempty"`
+}
+
+// SmartSceneOptionalRecallAction Activate will start the smart (24h) scene; deactivate will stop it
+type SmartSceneOptionalRecallAction string
+
+// SmartScenePost defines model for SmartScenePost.
+type SmartScenePost struct {
+	Group    ResourceIdentifier          `json:"group"`
+	Metadata SmartSceneMetadataWithImage `json:"metadata"`
+	Recall   *SmartSceneRecall           `json:"recall,omitempty"`
+
+	// TransitionDuration duration of the transition from on one timeslot's scene to the other (defaults to 60000ms)
+	TransitionDuration *int                `json:"transition_duration,omitempty"`
+	Type               *SmartScenePostType `json:"type,omitempty"`
+
+	// WeekTimeslots information on what is the light state for every timeslot of the day
+	WeekTimeslots []DayTimeslotsGet `json:"week_timeslots"`
+}
+
+// SmartScenePostType defines model for SmartScenePost.Type.
+type SmartScenePostType string
+
+// SmartScenePut defines model for SmartScenePut.
+type SmartScenePut struct {
+	Metadata *SmartSceneMetadata       `json:"metadata,omitempty"`
+	Recall   *SmartSceneOptionalRecall `json:"recall,omitempty"`
+
+	// TransitionDuration duration of the transition from on one timeslot's scene to the other (defaults to 60000ms)
+	TransitionDuration *int               `json:"transition_duration,omitempty"`
+	Type               *SmartScenePutType `json:"type,omitempty"`
+
+	// WeekTimeslots information on what is the light state for every timeslot of the day
+	WeekTimeslots *[]DayTimeslotsGet `json:"week_timeslots,omitempty"`
+}
+
+// SmartScenePutType defines model for SmartScenePut.Type.
+type SmartScenePutType string
+
+// SmartSceneRecall defines model for SmartSceneRecall.
+type SmartSceneRecall struct {
+	// Action Activate will start the smart (24h) scene; deactivate will stop it
+	Action SmartSceneRecallAction `json:"action"`
+}
+
+// SmartSceneRecallAction Activate will start the smart (24h) scene; deactivate will stop it
+type SmartSceneRecallAction string
+
+// SmartSceneTimeslotGet defines model for SmartSceneTimeslotGet.
+type SmartSceneTimeslotGet struct {
+	StartTime struct {
+		Kind SmartSceneTimeslotGetStartTimeKind `json:"kind"`
+
+		// Time this property is only used when property “kind” is “time”
+		Time *struct {
+			Hour   *int `json:"hour,omitempty"`
+			Minute *int `json:"minute,omitempty"`
+			Second *int `json:"second,omitempty"`
+		} `json:"time,omitempty"`
+	} `json:"start_time"`
+	Target ResourceIdentifier `json:"target"`
+}
+
+// SmartSceneTimeslotGetStartTimeKind defines model for SmartSceneTimeslotGet.StartTime.Kind.
+type SmartSceneTimeslotGetStartTimeKind string
+
 // SupportedDynamicStatus Current status of the lamp with dynamics.
 type SupportedDynamicStatus string
 
@@ -1572,6 +1749,9 @@ type TemperaturePut struct {
 
 // TemperaturePutType Type of the supported resources (always `temperature` here)
 type TemperaturePutType string
+
+// Weekday defines model for Weekday.
+type Weekday string
 
 // Response defines model for response.
 type Response = []struct {
@@ -1654,6 +1834,12 @@ type CreateSceneJSONRequestBody = ScenePost
 
 // UpdateSceneJSONRequestBody defines body for UpdateScene for application/json ContentType.
 type UpdateSceneJSONRequestBody = ScenePut
+
+// CreateSmartSceneJSONRequestBody defines body for CreateSmartScene for application/json ContentType.
+type CreateSmartSceneJSONRequestBody = SmartScenePost
+
+// UpdateSmartSceneJSONRequestBody defines body for UpdateSmartScene for application/json ContentType.
+type UpdateSmartSceneJSONRequestBody = SmartScenePut
 
 // UpdateTemperatureJSONRequestBody defines body for UpdateTemperature for application/json ContentType.
 type UpdateTemperatureJSONRequestBody = TemperaturePut
@@ -1863,6 +2049,25 @@ type ClientInterface interface {
 	UpdateSceneWithBody(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateScene(ctx context.Context, sceneId string, body UpdateSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSmartScenes request
+	GetSmartScenes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSmartSceneWithBody request with any body
+	CreateSmartSceneWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateSmartScene(ctx context.Context, body CreateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteSmartScene request
+	DeleteSmartScene(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSmartScene request
+	GetSmartScene(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSmartSceneWithBody request with any body
+	UpdateSmartSceneWithBody(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSmartScene(ctx context.Context, sceneId string, body UpdateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetTemperatures request
 	GetTemperatures(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2437,6 +2642,90 @@ func (c *Client) UpdateSceneWithBody(ctx context.Context, sceneId string, conten
 
 func (c *Client) UpdateScene(ctx context.Context, sceneId string, body UpdateSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSceneRequest(c.Server, sceneId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSmartScenes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSmartScenesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSmartSceneWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSmartSceneRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSmartScene(ctx context.Context, body CreateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSmartSceneRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteSmartScene(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSmartSceneRequest(c.Server, sceneId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSmartScene(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSmartSceneRequest(c.Server, sceneId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSmartSceneWithBody(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSmartSceneRequestWithBody(c.Server, sceneId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSmartScene(ctx context.Context, sceneId string, body UpdateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSmartSceneRequest(c.Server, sceneId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -3814,6 +4103,188 @@ func NewUpdateSceneRequestWithBody(server string, sceneId string, contentType st
 	return req, nil
 }
 
+// NewGetSmartScenesRequest generates requests for GetSmartScenes
+func NewGetSmartScenesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/smart_scene")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateSmartSceneRequest calls the generic CreateSmartScene builder with application/json body
+func NewCreateSmartSceneRequest(server string, body CreateSmartSceneJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateSmartSceneRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateSmartSceneRequestWithBody generates requests for CreateSmartScene with any type of body
+func NewCreateSmartSceneRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/smart_scene")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteSmartSceneRequest generates requests for DeleteSmartScene
+func NewDeleteSmartSceneRequest(server string, sceneId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "sceneId", runtime.ParamLocationPath, sceneId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/smart_scene/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetSmartSceneRequest generates requests for GetSmartScene
+func NewGetSmartSceneRequest(server string, sceneId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "sceneId", runtime.ParamLocationPath, sceneId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/smart_scene/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateSmartSceneRequest calls the generic UpdateSmartScene builder with application/json body
+func NewUpdateSmartSceneRequest(server string, sceneId string, body UpdateSmartSceneJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSmartSceneRequestWithBody(server, sceneId, "application/json", bodyReader)
+}
+
+// NewUpdateSmartSceneRequestWithBody generates requests for UpdateSmartScene with any type of body
+func NewUpdateSmartSceneRequestWithBody(server string, sceneId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "sceneId", runtime.ParamLocationPath, sceneId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/smart_scene/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetTemperaturesRequest generates requests for GetTemperatures
 func NewGetTemperaturesRequest(server string) (*http.Request, error) {
 	var err error
@@ -4273,6 +4744,25 @@ type ClientWithResponsesInterface interface {
 	UpdateSceneWithBodyWithResponse(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSceneResponse, error)
 
 	UpdateSceneWithResponse(ctx context.Context, sceneId string, body UpdateSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSceneResponse, error)
+
+	// GetSmartScenesWithResponse request
+	GetSmartScenesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSmartScenesResponse, error)
+
+	// CreateSmartSceneWithBodyWithResponse request with any body
+	CreateSmartSceneWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSmartSceneResponse, error)
+
+	CreateSmartSceneWithResponse(ctx context.Context, body CreateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSmartSceneResponse, error)
+
+	// DeleteSmartSceneWithResponse request
+	DeleteSmartSceneWithResponse(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*DeleteSmartSceneResponse, error)
+
+	// GetSmartSceneWithResponse request
+	GetSmartSceneWithResponse(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*GetSmartSceneResponse, error)
+
+	// UpdateSmartSceneWithBodyWithResponse request with any body
+	UpdateSmartSceneWithBodyWithResponse(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSmartSceneResponse, error)
+
+	UpdateSmartSceneWithResponse(ctx context.Context, sceneId string, body UpdateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSmartSceneResponse, error)
 
 	// GetTemperaturesWithResponse request
 	GetTemperaturesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetTemperaturesResponse, error)
@@ -5518,6 +6008,181 @@ func (r UpdateSceneResponse) StatusCode() int {
 	return 0
 }
 
+type GetSmartScenesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]SmartSceneGet `json:"data,omitempty"`
+		Errors *[]Error         `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSmartScenesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSmartScenesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateSmartSceneResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]ResourceIdentifier `json:"data,omitempty"`
+		Errors *[]Error              `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateSmartSceneResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateSmartSceneResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteSmartSceneResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]ResourceIdentifier `json:"data,omitempty"`
+		Errors *[]Error              `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteSmartSceneResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteSmartSceneResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetSmartSceneResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]SmartSceneGet `json:"data,omitempty"`
+		Errors *[]Error         `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetSmartSceneResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetSmartSceneResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateSmartSceneResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]ResourceIdentifier `json:"data,omitempty"`
+		Errors *[]Error              `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSmartSceneResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSmartSceneResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetTemperaturesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -6199,6 +6864,67 @@ func (c *ClientWithResponses) UpdateSceneWithResponse(ctx context.Context, scene
 		return nil, err
 	}
 	return ParseUpdateSceneResponse(rsp)
+}
+
+// GetSmartScenesWithResponse request returning *GetSmartScenesResponse
+func (c *ClientWithResponses) GetSmartScenesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSmartScenesResponse, error) {
+	rsp, err := c.GetSmartScenes(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSmartScenesResponse(rsp)
+}
+
+// CreateSmartSceneWithBodyWithResponse request with arbitrary body returning *CreateSmartSceneResponse
+func (c *ClientWithResponses) CreateSmartSceneWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSmartSceneResponse, error) {
+	rsp, err := c.CreateSmartSceneWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSmartSceneResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateSmartSceneWithResponse(ctx context.Context, body CreateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSmartSceneResponse, error) {
+	rsp, err := c.CreateSmartScene(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSmartSceneResponse(rsp)
+}
+
+// DeleteSmartSceneWithResponse request returning *DeleteSmartSceneResponse
+func (c *ClientWithResponses) DeleteSmartSceneWithResponse(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*DeleteSmartSceneResponse, error) {
+	rsp, err := c.DeleteSmartScene(ctx, sceneId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteSmartSceneResponse(rsp)
+}
+
+// GetSmartSceneWithResponse request returning *GetSmartSceneResponse
+func (c *ClientWithResponses) GetSmartSceneWithResponse(ctx context.Context, sceneId string, reqEditors ...RequestEditorFn) (*GetSmartSceneResponse, error) {
+	rsp, err := c.GetSmartScene(ctx, sceneId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSmartSceneResponse(rsp)
+}
+
+// UpdateSmartSceneWithBodyWithResponse request with arbitrary body returning *UpdateSmartSceneResponse
+func (c *ClientWithResponses) UpdateSmartSceneWithBodyWithResponse(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSmartSceneResponse, error) {
+	rsp, err := c.UpdateSmartSceneWithBody(ctx, sceneId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSmartSceneResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSmartSceneWithResponse(ctx context.Context, sceneId string, body UpdateSmartSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSmartSceneResponse, error) {
+	rsp, err := c.UpdateSmartScene(ctx, sceneId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSmartSceneResponse(rsp)
 }
 
 // GetTemperaturesWithResponse request returning *GetTemperaturesResponse
@@ -9606,6 +10332,501 @@ func ParseUpdateSceneResponse(rsp *http.Response) (*UpdateSceneResponse, error) 
 	}
 
 	response := &UpdateSceneResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]ResourceIdentifier `json:"data,omitempty"`
+			Errors *[]Error              `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSmartScenesResponse parses an HTTP response from a GetSmartScenesWithResponse call
+func ParseGetSmartScenesResponse(rsp *http.Response) (*GetSmartScenesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSmartScenesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]SmartSceneGet `json:"data,omitempty"`
+			Errors *[]Error         `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateSmartSceneResponse parses an HTTP response from a CreateSmartSceneWithResponse call
+func ParseCreateSmartSceneResponse(rsp *http.Response) (*CreateSmartSceneResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateSmartSceneResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]ResourceIdentifier `json:"data,omitempty"`
+			Errors *[]Error              `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteSmartSceneResponse parses an HTTP response from a DeleteSmartSceneWithResponse call
+func ParseDeleteSmartSceneResponse(rsp *http.Response) (*DeleteSmartSceneResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteSmartSceneResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]ResourceIdentifier `json:"data,omitempty"`
+			Errors *[]Error              `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetSmartSceneResponse parses an HTTP response from a GetSmartSceneWithResponse call
+func ParseGetSmartSceneResponse(rsp *http.Response) (*GetSmartSceneResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetSmartSceneResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]SmartSceneGet `json:"data,omitempty"`
+			Errors *[]Error         `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateSmartSceneResponse parses an HTTP response from a UpdateSmartSceneWithResponse call
+func ParseUpdateSmartSceneResponse(rsp *http.Response) (*UpdateSmartSceneResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSmartSceneResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
