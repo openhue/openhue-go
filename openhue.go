@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"log/slog"
 	"net/http"
 )
 
@@ -21,7 +20,6 @@ func NewHome(bridgeIP, apiKey string) (*Home, error) {
 
 	client, err := newClient(bridgeIP, apiKey)
 	if err != nil {
-		slog.Error("Error creating new Home client", err)
 		return nil, err
 	}
 
