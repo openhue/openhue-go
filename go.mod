@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	github.com/grandcat/zeroconf v1.0.0
-	github.com/oapi-codegen/runtime v1.1.1
+	github.com/oapi-codegen/runtime v1.1.2
 	github.com/stretchr/testify v1.11.1
 	gopkg.in/yaml.v3 v3.0.1
 )
