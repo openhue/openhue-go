@@ -3,6 +3,7 @@ package openhue
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"net/http"
 )
@@ -284,11 +285,63 @@ func (h *Home) UpdateScene(sceneId string, body ScenePut) error {
 //
 
 // newClient creates a new ClientWithResponses for a given Bridge IP and API key.
-// This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
+// This function configures TLS to trust the Philips Hue Bridge root CA certificates.
 func newClient(bridgeIP, apiKey string) (*ClientWithResponses, error) {
 
-	var authFn RequestEditorFn
+	// Create a certificate pool with the Hue Bridge root CA certificates
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM([]byte(HueBridgeRootCAs)) {
+		return nil, errors.New("failed to parse Hue Bridge root CA certificates")
+	}
 
+	// Create a custom HTTP transport with proper TLS configuration
+	// InsecureSkipVerify is set to true because Hue bridges use IP addresses
+	// which aren't in the certificate SANs. We still validate the certificate
+	// chain in VerifyPeerCertificate.
+	customTransport := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			RootCAs:            certPool,
+			InsecureSkipVerify: true,
+			VerifyPeerCertificate: func(rawCerts [][]byte, verifiedChains [][]*x509.Certificate) error {
+				// Manually verify the certificate chain against the Hue root CAs
+				if len(rawCerts) == 0 {
+					return errors.New("no certificates presented")
+				}
+
+				// Parse the leaf certificate
+				cert, err := x509.ParseCertificate(rawCerts[0])
+				if err != nil {
+					return err
+				}
+
+				// Create intermediate pool from remaining certificates
+				intermediates := x509.NewCertPool()
+				for _, certBytes := range rawCerts[1:] {
+					intermediate, err := x509.ParseCertificate(certBytes)
+					if err != nil {
+						return err
+					}
+					intermediates.AddCert(intermediate)
+				}
+
+				// Verify the certificate chain
+				opts := x509.VerifyOptions{
+					Roots:         certPool,
+					Intermediates: intermediates,
+					KeyUsages:     []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+				}
+				_, err = cert.Verify(opts)
+				return err
+			},
+		},
+	}
+
+	// Create HTTP client with custom transport
+	httpClient := &http.Client{
+		Transport: customTransport,
+	}
+
+	var authFn RequestEditorFn
 	if len(apiKey) > 0 {
 		authFn = func(ctx context.Context, req *http.Request) error {
 			req.Header.Set("hue-application-key", apiKey)
@@ -300,8 +353,9 @@ func newClient(bridgeIP, apiKey string) (*ClientWithResponses, error) {
 		}
 	}
 
-	// skip SSL Verification
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-
-	return NewClientWithResponses("https://"+bridgeIP, WithRequestEditorFn(authFn))
+	return NewClientWithResponses(
+		"https://"+bridgeIP,
+		WithHTTPClient(httpClient),
+		WithRequestEditorFn(authFn),
+	)
 }
