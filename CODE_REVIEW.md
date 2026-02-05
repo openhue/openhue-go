@@ -52,51 +52,26 @@ http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSk
 // After:  home.GetLights(context.Background())
 ```
 
-### 3. **Error Response Handling is Incomplete** ⚠️ **PARTIALLY FIXED**
-**Status**: Fixed for `UpdateLight` and `UpdateGroupedLight` in branch `feat/context-propagation`
+### 3. **Error Response Handling is Incomplete** ✅ **FIXED**
+**Status**: Fixed in branch `fix/complete-error-handling`
 
-**Location**: `openhue.go` - methods like `UpdateLight`
+**Original Problem**: Update methods didn't check HTTP status codes, and error responses didn't extract API error descriptions.
 
-**Problem**: Some update methods don't check HTTP status codes:
-```go
-func (h *Home) UpdateLight(lightId string, body LightPut) error {
-    _, err := h.api.UpdateLightWithResponse(context.Background(), lightId, body)
-    return err // No status code check!
-}
-```
+**Solution Implemented**:
+- All methods now check HTTP status codes
+- `ApiError` now extracts error descriptions from API response body
+- Added sentinel errors (`ErrNotFound`, `ErrForbidden`, etc.) with `errors.Is()` support
+- Rich error messages with status-specific fallbacks
 
-**Solution**: Always check response status codes like in `UpdateScene`:
-```go
-func (h *Home) UpdateLight(lightId string, body LightPut) error {
-    resp, err := h.api.UpdateLightWithResponse(context.Background(), lightId, body)
-    if err != nil {
-        return err
-    }
-    if resp.HTTPResponse.StatusCode != http.StatusOK {
-        return newApiError(resp)
-    }
-    return nil
-}
-```
+### 4. **Unsafe Array Indexing** ✅ **FIXED**
+**Status**: Fixed in branch `fix/safe-array-indexing`
 
-### 4. **Unsafe Array Indexing**
-**Locations**: `openhue.go:50`, `openhue.go:112`, `openhue.go:225`
+**Original Problem**: Direct array indexing without bounds checking could cause panic.
 
-**Problem**: Direct indexing without bounds checking:
-```go
-return &(*(*resp.JSON200).Data)[0], nil
-```
-
-**Impact**: Panic if API returns empty array
-
-**Solution**:
-```go
-data := *(*resp.JSON200).Data
-if len(data) == 0 {
-    return nil, errors.New("no data returned from API")
-}
-return &data[0], nil
-```
+**Solution Implemented**:
+- Added bounds checking before array access in `GetBridgeHome`, `GetDeviceById`, and `GetGroupedLightById`
+- Added `ErrEmptyResponse` sentinel error for empty API responses
+- All "get by ID" methods now safely handle empty responses
 
 ---
 
@@ -608,7 +583,7 @@ update := LightPut{
 ### Medium Priority (Usability)
 5. Add Zones, Smart Scenes, Sensors wrappers
 6. Add convenience methods (TurnOnLight, SetBrightness, etc.)
-7. Improve error handling with specific error types
+7. ✅ Improve error handling with specific error types
 8. Add builder patterns for complex updates
 
 ### Low Priority (Nice to Have)

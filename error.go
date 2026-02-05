@@ -51,6 +51,7 @@ var (
 	ErrTooManyRequests     = errors.New("too many requests")
 	ErrInternalServerError = errors.New("internal server error")
 	ErrServiceUnavailable  = errors.New("service unavailable")
+	ErrEmptyResponse       = errors.New("no data returned from API")
 )
 
 // Is implements errors.Is for ApiError, allowing checks like:

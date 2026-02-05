@@ -44,11 +44,15 @@ func (h *Home) GetBridgeHome(ctx context.Context) (*BridgeHomeGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	if len(*(*resp.JSON200).Data) != 1 {
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+	if len(data) != 1 {
 		return nil, errors.New("more than 1 home attached to the bridge is not supported yet")
 	}
 
-	return &(*(*resp.JSON200).Data)[0], nil
+	return &data[0], nil
 }
 
 //--------------------------------------------------------------------------------------------------------------------//
@@ -110,6 +114,9 @@ func (h *Home) GetDeviceById(ctx context.Context, deviceId string) (*DeviceGet, 
 	}
 
 	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
 
 	return &data[0], nil
 }
@@ -225,6 +232,9 @@ func (h *Home) GetGroupedLightById(ctx context.Context, groupedLightId string) (
 	}
 
 	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
 
 	return &data[0], nil
 }
