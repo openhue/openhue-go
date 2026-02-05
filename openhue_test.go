@@ -1,6 +1,7 @@
 package openhue
 
 import (
+	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http"
@@ -16,7 +17,7 @@ func TestNewHome(t *testing.T) {
 	}
 	m.On("GetDevicesWithResponse", mock.Anything, mock.Anything).Return(&resp, nil)
 
-	_, err := home.GetDevices()
+	_, err := home.GetDevices(context.Background())
 	assert.Error(t, err)
 	assert.ErrorContains(t, err, "openhue api error: wrong API key")
 }

@@ -2,6 +2,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/openhue/openhue-go"
 )
@@ -11,7 +12,8 @@ func main() {
 	home, err := openhue.NewHome(openhue.LoadConfNoError())
 	openhue.CheckErr(err)
 
-	rooms, err := home.GetRooms()
+	ctx := context.Background()
+	rooms, err := home.GetRooms(ctx)
 	openhue.CheckErr(err)
 
 	for id, room := range rooms {
@@ -21,9 +23,9 @@ func main() {
 		for serviceId, serviceType := range room.GetServices() {
 
 			if serviceType == openhue.ResourceIdentifierRtypeGroupedLight {
-				groupedLight, _ := home.GetGroupedLightById(serviceId)
+				groupedLight, _ := home.GetGroupedLightById(ctx, serviceId)
 
-				home.UpdateGroupedLight(*groupedLight.Id, openhue.GroupedLightPut{
+				home.UpdateGroupedLight(ctx, *groupedLight.Id, openhue.GroupedLightPut{
 					On: groupedLight.Toggle(),
 				})
 			}
