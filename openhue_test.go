@@ -112,6 +112,66 @@ func TestApiError_Is(t *testing.T) {
 	}
 }
 
+func TestGetDeviceById_EmptyResponse(t *testing.T) {
+	home, m := NewTestHome()
+
+	emptyData := []DeviceGet{}
+	resp := GetDeviceResponse{
+		HTTPResponse: &http.Response{StatusCode: 200},
+		JSON200: &struct {
+			Data   *[]DeviceGet `json:"data,omitempty"`
+			Errors *[]Error     `json:"errors,omitempty"`
+		}{
+			Data: &emptyData,
+		},
+	}
+	m.On("GetDeviceWithResponse", mock.Anything, mock.Anything, mock.Anything).Return(&resp, nil)
+
+	_, err := home.GetDeviceById(context.Background(), "some-id")
+	assert.Error(t, err)
+	assert.True(t, errors.Is(err, ErrEmptyResponse))
+}
+
+func TestGetGroupedLightById_EmptyResponse(t *testing.T) {
+	home, m := NewTestHome()
+
+	emptyData := []GroupedLightGet{}
+	resp := GetGroupedLightResponse{
+		HTTPResponse: &http.Response{StatusCode: 200},
+		JSON200: &struct {
+			Data   *[]GroupedLightGet `json:"data,omitempty"`
+			Errors *[]Error           `json:"errors,omitempty"`
+		}{
+			Data: &emptyData,
+		},
+	}
+	m.On("GetGroupedLightWithResponse", mock.Anything, mock.Anything, mock.Anything).Return(&resp, nil)
+
+	_, err := home.GetGroupedLightById(context.Background(), "some-id")
+	assert.Error(t, err)
+	assert.True(t, errors.Is(err, ErrEmptyResponse))
+}
+
+func TestGetBridgeHome_EmptyResponse(t *testing.T) {
+	home, m := NewTestHome()
+
+	emptyData := []BridgeHomeGet{}
+	resp := GetBridgeHomesResponse{
+		HTTPResponse: &http.Response{StatusCode: 200},
+		JSON200: &struct {
+			Data   *[]BridgeHomeGet `json:"data,omitempty"`
+			Errors *[]Error         `json:"errors,omitempty"`
+		}{
+			Data: &emptyData,
+		},
+	}
+	m.On("GetBridgeHomesWithResponse", mock.Anything, mock.Anything).Return(&resp, nil)
+
+	_, err := home.GetBridgeHome(context.Background())
+	assert.Error(t, err)
+	assert.True(t, errors.Is(err, ErrEmptyResponse))
+}
+
 func TestApiError_ErrorMessage(t *testing.T) {
 	tests := []struct {
 		name        string
