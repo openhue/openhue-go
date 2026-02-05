@@ -294,45 +294,43 @@ func newClient(bridgeIP, apiKey string) (*ClientWithResponses, error) {
 		return nil, errors.New("failed to parse Hue Bridge root CA certificates")
 	}
 
-	// Create a custom HTTP transport with proper TLS configuration
-	// InsecureSkipVerify is set to true because Hue bridges use IP addresses
-	// which aren't in the certificate SANs. We still validate the certificate
-	// chain in VerifyPeerCertificate.
-	customTransport := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			RootCAs:            certPool,
-			InsecureSkipVerify: true,
-			VerifyPeerCertificate: func(rawCerts [][]byte, verifiedChains [][]*x509.Certificate) error {
-				// Manually verify the certificate chain against the Hue root CAs
-				if len(rawCerts) == 0 {
-					return errors.New("no certificates presented")
-				}
+	// Clone the default transport to preserve defaults like ProxyFromEnvironment,
+	// timeouts, and HTTP/2 support. Only override TLS configuration.
+	customTransport := http.DefaultTransport.(*http.Transport).Clone()
+	customTransport.TLSClientConfig = &tls.Config{
+		RootCAs: certPool,
+		// linter ignore:go/disabled-certificate-check
+		InsecureSkipVerify: true,
+		VerifyPeerCertificate: func(rawCerts [][]byte, verifiedChains [][]*x509.Certificate) error {
+			// Manually verify the certificate chain against the Hue root CAs
+			if len(rawCerts) == 0 {
+				return errors.New("no certificates presented")
+			}
 
-				// Parse the leaf certificate
-				cert, err := x509.ParseCertificate(rawCerts[0])
+			// Parse the leaf certificate
+			cert, err := x509.ParseCertificate(rawCerts[0])
+			if err != nil {
+				return err
+			}
+
+			// Create intermediate pool from remaining certificates
+			intermediates := x509.NewCertPool()
+			for _, certBytes := range rawCerts[1:] {
+				intermediate, err := x509.ParseCertificate(certBytes)
 				if err != nil {
 					return err
 				}
+				intermediates.AddCert(intermediate)
+			}
 
-				// Create intermediate pool from remaining certificates
-				intermediates := x509.NewCertPool()
-				for _, certBytes := range rawCerts[1:] {
-					intermediate, err := x509.ParseCertificate(certBytes)
-					if err != nil {
-						return err
-					}
-					intermediates.AddCert(intermediate)
-				}
-
-				// Verify the certificate chain
-				opts := x509.VerifyOptions{
-					Roots:         certPool,
-					Intermediates: intermediates,
-					KeyUsages:     []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-				}
-				_, err = cert.Verify(opts)
-				return err
-			},
+			// Verify the certificate chain
+			opts := x509.VerifyOptions{
+				Roots:         certPool,
+				Intermediates: intermediates,
+				KeyUsages:     []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+			}
+			_, err = cert.Verify(opts)
+			return err
 		},
 	}
 
