@@ -33,9 +33,9 @@ func NewHome(bridgeIP, apiKey string) (*Home, error) {
 // BRIDGE HOME
 //--------------------------------------------------------------------------------------------------------------------//
 
-func (h *Home) GetBridgeHome() (*BridgeHomeGet, error) {
+func (h *Home) GetBridgeHome(ctx context.Context) (*BridgeHomeGet, error) {
 
-	resp, err := h.api.GetBridgeHomesWithResponse(context.Background())
+	resp, err := h.api.GetBridgeHomesWithResponse(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +55,8 @@ func (h *Home) GetBridgeHome() (*BridgeHomeGet, error) {
 // RESOURCE
 //--------------------------------------------------------------------------------------------------------------------//
 
-func (h *Home) GetResources() (map[string]ResourceGet, error) {
-	resp, err := h.api.GetResourcesWithResponse(context.Background())
+func (h *Home) GetResources(ctx context.Context) (map[string]ResourceGet, error) {
+	resp, err := h.api.GetResourcesWithResponse(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +79,8 @@ func (h *Home) GetResources() (map[string]ResourceGet, error) {
 // DEVICE
 //--------------------------------------------------------------------------------------------------------------------//
 
-func (h *Home) GetDevices() (map[string]DeviceGet, error) {
-	resp, err := h.api.GetDevicesWithResponse(context.Background())
+func (h *Home) GetDevices(ctx context.Context) (map[string]DeviceGet, error) {
+	resp, err := h.api.GetDevicesWithResponse(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +99,8 @@ func (h *Home) GetDevices() (map[string]DeviceGet, error) {
 	return devices, nil
 }
 
-func (h *Home) GetDeviceById(deviceId string) (*DeviceGet, error) {
-	resp, err := h.api.GetDeviceWithResponse(context.Background(), deviceId)
+func (h *Home) GetDeviceById(ctx context.Context, deviceId string) (*DeviceGet, error) {
+	resp, err := h.api.GetDeviceWithResponse(ctx, deviceId)
 	if err != nil {
 		return nil, err
 	}
@@ -118,8 +118,8 @@ func (h *Home) GetDeviceById(deviceId string) (*DeviceGet, error) {
 // ROOM
 //--------------------------------------------------------------------------------------------------------------------//
 
-func (h *Home) GetRooms() (map[string]RoomGet, error) {
-	resp, err := h.api.GetRoomsWithResponse(context.Background())
+func (h *Home) GetRooms(ctx context.Context) (map[string]RoomGet, error) {
+	resp, err := h.api.GetRoomsWithResponse(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -150,8 +150,8 @@ func (r *RoomGet) GetServices() map[string]ResourceIdentifierRtype {
 // LIGHT
 //--------------------------------------------------------------------------------------------------------------------//
 
-func (h *Home) GetLights() (map[string]LightGet, error) {
-	resp, err := h.api.GetLightsWithResponse(context.Background())
+func (h *Home) GetLights(ctx context.Context) (map[string]LightGet, error) {
+	resp, err := h.api.GetLightsWithResponse(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -179,10 +179,13 @@ func (l *LightGet) Toggle() *On {
 	return &On{On: &v}
 }
 
-func (h *Home) UpdateLight(lightId string, body LightPut) error {
-	_, err := h.api.UpdateLightWithResponse(context.Background(), lightId, body)
+func (h *Home) UpdateLight(ctx context.Context, lightId string, body LightPut) error {
+	resp, err := h.api.UpdateLightWithResponse(ctx, lightId, body)
 	if err != nil {
 		return err
+	}
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
 	}
 	return nil
 }
@@ -191,8 +194,8 @@ func (h *Home) UpdateLight(lightId string, body LightPut) error {
 // GROUPED LIGHT
 //--------------------------------------------------------------------------------------------------------------------//
 
-func (h *Home) GetGroupedLights() (map[string]GroupedLightGet, error) {
-	resp, err := h.api.GetGroupedLightsWithResponse(context.Background())
+func (h *Home) GetGroupedLights(ctx context.Context) (map[string]GroupedLightGet, error) {
+	resp, err := h.api.GetGroupedLightsWithResponse(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -211,8 +214,8 @@ func (h *Home) GetGroupedLights() (map[string]GroupedLightGet, error) {
 	return lights, nil
 }
 
-func (h *Home) GetGroupedLightById(groupedLightId string) (*GroupedLightGet, error) {
-	resp, err := h.api.GetGroupedLightWithResponse(context.Background(), groupedLightId)
+func (h *Home) GetGroupedLightById(ctx context.Context, groupedLightId string) (*GroupedLightGet, error) {
+	resp, err := h.api.GetGroupedLightWithResponse(ctx, groupedLightId)
 	if err != nil {
 		return nil, err
 	}
@@ -235,10 +238,13 @@ func (l *GroupedLightGet) Toggle() *On {
 	return &On{On: &v}
 }
 
-func (h *Home) UpdateGroupedLight(lightId string, body GroupedLightPut) error {
-	_, err := h.api.UpdateGroupedLightWithResponse(context.Background(), lightId, body)
+func (h *Home) UpdateGroupedLight(ctx context.Context, lightId string, body GroupedLightPut) error {
+	resp, err := h.api.UpdateGroupedLightWithResponse(ctx, lightId, body)
 	if err != nil {
 		return err
+	}
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
 	}
 	return nil
 }
@@ -247,8 +253,8 @@ func (h *Home) UpdateGroupedLight(lightId string, body GroupedLightPut) error {
 // SCENE
 //--------------------------------------------------------------------------------------------------------------------//
 
-func (h *Home) GetScenes() (map[string]SceneGet, error) {
-	resp, err := h.api.GetScenesWithResponse(context.Background())
+func (h *Home) GetScenes(ctx context.Context) (map[string]SceneGet, error) {
+	resp, err := h.api.GetScenesWithResponse(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -267,8 +273,8 @@ func (h *Home) GetScenes() (map[string]SceneGet, error) {
 	return scenes, nil
 }
 
-func (h *Home) UpdateScene(sceneId string, body ScenePut) error {
-	resp, err := h.api.UpdateSceneWithResponse(context.Background(), sceneId, body)
+func (h *Home) UpdateScene(ctx context.Context, sceneId string, body ScenePut) error {
+	resp, err := h.api.UpdateSceneWithResponse(ctx, sceneId, body)
 	if err != nil {
 		return err
 	}
