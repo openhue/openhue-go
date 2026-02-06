@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -205,4 +206,67 @@ func TestApiError_ErrorMessage(t *testing.T) {
 			assert.Contains(t, tt.apiErr.Error(), tt.wantContain)
 		})
 	}
+}
+
+// Tests for NewHome functional options
+
+func TestNewHome_EmptyBridgeIP(t *testing.T) {
+	_, err := NewHome("", "api-key")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "bridgeIP and apiKey must be set")
+}
+
+func TestNewHome_EmptyApiKey(t *testing.T) {
+	_, err := NewHome("192.168.1.1", "")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "bridgeIP and apiKey must be set")
+}
+
+func TestWithCustomHTTPClient_NilClient(t *testing.T) {
+	_, err := NewHome("192.168.1.1", "api-key", WithCustomHTTPClient(nil))
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "HTTP client cannot be nil")
+}
+
+func TestWithRequestTimeout_NegativeTimeout(t *testing.T) {
+	_, err := NewHome("192.168.1.1", "api-key", WithRequestTimeout(-1*time.Second))
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "timeout cannot be negative")
+}
+
+func TestWithRequestTimeout_ZeroTimeout(t *testing.T) {
+	// Zero timeout should be allowed (means no timeout)
+	home, err := NewHome("192.168.1.1", "api-key", WithRequestTimeout(0))
+	assert.NoError(t, err)
+	assert.NotNil(t, home)
+}
+
+func TestWithCustomHTTPClient_ValidClient(t *testing.T) {
+	customClient := &http.Client{}
+	home, err := NewHome("192.168.1.1", "api-key", WithCustomHTTPClient(customClient))
+	assert.NoError(t, err)
+	assert.NotNil(t, home)
+}
+
+func TestWithRequestTimeout_ValidTimeout(t *testing.T) {
+	home, err := NewHome("192.168.1.1", "api-key", WithRequestTimeout(60*time.Second))
+	assert.NoError(t, err)
+	assert.NotNil(t, home)
+}
+
+func TestNewHome_MultipleOptions(t *testing.T) {
+	customClient := &http.Client{}
+	home, err := NewHome("192.168.1.1", "api-key",
+		WithCustomHTTPClient(customClient),
+		WithRequestTimeout(30*time.Second), // This will be ignored since custom client is set
+	)
+	assert.NoError(t, err)
+	assert.NotNil(t, home)
+}
+
+func TestNewHome_DefaultTimeout(t *testing.T) {
+	// Test that NewHome works without any options
+	home, err := NewHome("192.168.1.1", "api-key")
+	assert.NoError(t, err)
+	assert.NotNil(t, home)
 }

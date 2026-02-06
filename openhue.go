@@ -6,20 +6,83 @@ import (
 	"crypto/x509"
 	"errors"
 	"net/http"
+	"time"
 )
 
 type Home struct {
 	api ClientWithResponsesInterface
 }
 
+// homeConfig holds the configuration options for creating a Home instance.
+type homeConfig struct {
+	httpClient *http.Client
+	timeout    time.Duration
+}
+
+// HomeOption is a functional option for configuring a Home instance.
+type HomeOption func(*homeConfig) error
+
+// WithCustomHTTPClient sets a custom HTTP client for the Home instance.
+// This allows users to provide their own configured HTTP client with custom
+// transport settings, timeouts, or other configurations.
+// Note: When providing a custom HTTP client, you are responsible for configuring
+// TLS settings appropriately for connecting to Hue bridges.
+func WithCustomHTTPClient(client *http.Client) HomeOption {
+	return func(c *homeConfig) error {
+		if client == nil {
+			return errors.New("HTTP client cannot be nil")
+		}
+		c.httpClient = client
+		return nil
+	}
+}
+
+// WithRequestTimeout sets the timeout for HTTP requests made by the Home instance.
+// This timeout applies to the default HTTP client created by NewHome.
+// If a custom HTTP client is provided via WithCustomHTTPClient, this option is ignored.
+func WithRequestTimeout(timeout time.Duration) HomeOption {
+	return func(c *homeConfig) error {
+		if timeout < 0 {
+			return errors.New("timeout cannot be negative")
+		}
+		c.timeout = timeout
+		return nil
+	}
+}
+
 // NewHome creates a new Home context that is able to manage your different Philips Hue devices.
-func NewHome(bridgeIP, apiKey string) (*Home, error) {
+// It accepts optional HomeOption functions to customize the behavior.
+//
+// Example:
+//
+//	// Basic usage
+//	home, err := openhue.NewHome("192.168.1.2", "api-key")
+//
+//	// With custom timeout
+//	home, err := openhue.NewHome("192.168.1.2", "api-key", openhue.WithRequestTimeout(30*time.Second))
+//
+//	// With custom HTTP client
+//	customClient := &http.Client{Timeout: 60 * time.Second}
+//	home, err := openhue.NewHome("192.168.1.2", "api-key", openhue.WithCustomHTTPClient(customClient))
+func NewHome(bridgeIP, apiKey string, opts ...HomeOption) (*Home, error) {
 
 	if bridgeIP == "" || apiKey == "" {
 		return nil, errors.New("illegal arguments, bridgeIP and apiKey must be set")
 	}
 
-	client, err := newClient(bridgeIP, apiKey)
+	// Initialize config with defaults
+	cfg := &homeConfig{
+		timeout: 30 * time.Second, // default timeout
+	}
+
+	// Apply options
+	for _, opt := range opts {
+		if err := opt(cfg); err != nil {
+			return nil, err
+		}
+	}
+
+	client, err := newClient(bridgeIP, apiKey, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -908,57 +971,71 @@ func (h *Home) GetDevicePowerById(ctx context.Context, devicePowerId string) (*D
 
 // newClient creates a new ClientWithResponses for a given Bridge IP and API key.
 // This function configures TLS to trust the Philips Hue Bridge root CA certificates.
-func newClient(bridgeIP, apiKey string) (*ClientWithResponses, error) {
+func newClient(bridgeIP, apiKey string, cfg *homeConfig) (*ClientWithResponses, error) {
 
-	// Create a certificate pool with the Hue Bridge root CA certificates
-	certPool := x509.NewCertPool()
-	if !certPool.AppendCertsFromPEM([]byte(HueBridgeRootCAs)) {
-		return nil, errors.New("failed to parse Hue Bridge root CA certificates")
-	}
+	var httpClient *http.Client
 
-	// Clone the default transport to preserve defaults like ProxyFromEnvironment,
-	// timeouts, and HTTP/2 support. Only override TLS configuration.
-	customTransport := http.DefaultTransport.(*http.Transport).Clone()
-	customTransport.TLSClientConfig = &tls.Config{
-		RootCAs: certPool,
-		// linter ignore:go/disabled-certificate-check
-		InsecureSkipVerify: true,
-		VerifyPeerCertificate: func(rawCerts [][]byte, verifiedChains [][]*x509.Certificate) error {
-			// Manually verify the certificate chain against the Hue root CAs
-			if len(rawCerts) == 0 {
-				return errors.New("no certificates presented")
-			}
+	// Use custom HTTP client if provided, otherwise create one with Hue TLS config
+	if cfg != nil && cfg.httpClient != nil {
+		httpClient = cfg.httpClient
+	} else {
+		// Create a certificate pool with the Hue Bridge root CA certificates
+		certPool := x509.NewCertPool()
+		if !certPool.AppendCertsFromPEM([]byte(HueBridgeRootCAs)) {
+			return nil, errors.New("failed to parse Hue Bridge root CA certificates")
+		}
 
-			// Parse the leaf certificate
-			cert, err := x509.ParseCertificate(rawCerts[0])
-			if err != nil {
-				return err
-			}
+		// Clone the default transport to preserve defaults like ProxyFromEnvironment,
+		// timeouts, and HTTP/2 support. Only override TLS configuration.
+		customTransport := http.DefaultTransport.(*http.Transport).Clone()
+		customTransport.TLSClientConfig = &tls.Config{
+			RootCAs: certPool,
+			// linter ignore:go/disabled-certificate-check
+			InsecureSkipVerify: true,
+			VerifyPeerCertificate: func(rawCerts [][]byte, verifiedChains [][]*x509.Certificate) error {
+				// Manually verify the certificate chain against the Hue root CAs
+				if len(rawCerts) == 0 {
+					return errors.New("no certificates presented")
+				}
 
-			// Create intermediate pool from remaining certificates
-			intermediates := x509.NewCertPool()
-			for _, certBytes := range rawCerts[1:] {
-				intermediate, err := x509.ParseCertificate(certBytes)
+				// Parse the leaf certificate
+				cert, err := x509.ParseCertificate(rawCerts[0])
 				if err != nil {
 					return err
 				}
-				intermediates.AddCert(intermediate)
-			}
 
-			// Verify the certificate chain
-			opts := x509.VerifyOptions{
-				Roots:         certPool,
-				Intermediates: intermediates,
-				KeyUsages:     []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-			}
-			_, err = cert.Verify(opts)
-			return err
-		},
-	}
+				// Create intermediate pool from remaining certificates
+				intermediates := x509.NewCertPool()
+				for _, certBytes := range rawCerts[1:] {
+					intermediate, err := x509.ParseCertificate(certBytes)
+					if err != nil {
+						return err
+					}
+					intermediates.AddCert(intermediate)
+				}
 
-	// Create HTTP client with custom transport
-	httpClient := &http.Client{
-		Transport: customTransport,
+				// Verify the certificate chain
+				opts := x509.VerifyOptions{
+					Roots:         certPool,
+					Intermediates: intermediates,
+					KeyUsages:     []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+				}
+				_, err = cert.Verify(opts)
+				return err
+			},
+		}
+
+		// Create HTTP client with custom transport and configured timeout
+		var timeout time.Duration
+		if cfg != nil {
+			timeout = cfg.timeout
+		} else {
+			timeout = 30 * time.Second // default timeout
+		}
+		httpClient = &http.Client{
+			Transport: customTransport,
+			Timeout:   timeout,
+		}
 	}
 
 	var authFn RequestEditorFn

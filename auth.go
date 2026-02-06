@@ -23,7 +23,7 @@ type authenticatorImpl struct {
 type authOpt func(b *authenticatorImpl)
 
 func NewAuthenticator(bridgeIP string, opts ...authOpt) (Authenticator, error) {
-	client, err := newClient(bridgeIP, "")
+	client, err := newClient(bridgeIP, "", nil)
 	if err != nil {
 		return nil, err
 	}
