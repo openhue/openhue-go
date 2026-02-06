@@ -145,12 +145,161 @@ func (h *Home) GetRooms(ctx context.Context) (map[string]RoomGet, error) {
 	return rooms, nil
 }
 
+func (h *Home) GetRoomById(ctx context.Context, roomId string) (*RoomGet, error) {
+	resp, err := h.api.GetRoomWithResponse(ctx, roomId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) CreateRoom(ctx context.Context, body RoomPut) (*ResourceIdentifier, error) {
+	resp, err := h.api.CreateRoomWithResponse(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) UpdateRoom(ctx context.Context, roomId string, body RoomPut) error {
+	resp, err := h.api.UpdateRoomWithResponse(ctx, roomId, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+func (h *Home) DeleteRoom(ctx context.Context, roomId string) error {
+	resp, err := h.api.DeleteRoomWithResponse(ctx, roomId)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
 func (r *RoomGet) GetServices() map[string]ResourceIdentifierRtype {
 	services := make(map[string]ResourceIdentifierRtype)
 	for _, s := range *r.Services {
 		services[*s.Rid] = *s.Rtype
 	}
 	return services
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// ZONE
+// Note: Zones use RoomGet/RoomPut types in the API
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetZones(ctx context.Context) (map[string]RoomGet, error) {
+	resp, err := h.api.GetZonesWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	zones := make(map[string]RoomGet)
+
+	for _, zone := range data {
+		zones[*zone.Id] = zone
+	}
+
+	return zones, nil
+}
+
+func (h *Home) GetZoneById(ctx context.Context, zoneId string) (*RoomGet, error) {
+	resp, err := h.api.GetZoneWithResponse(ctx, zoneId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) CreateZone(ctx context.Context, body RoomPut) (*ResourceIdentifier, error) {
+	resp, err := h.api.CreateZoneWithResponse(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) UpdateZone(ctx context.Context, zoneId string, body RoomPut) error {
+	resp, err := h.api.UpdateZoneWithResponse(ctx, zoneId, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+func (h *Home) DeleteZone(ctx context.Context, zoneId string) error {
+	resp, err := h.api.DeleteZoneWithResponse(ctx, zoneId)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
 }
 
 //--------------------------------------------------------------------------------------------------------------------//
@@ -175,6 +324,24 @@ func (h *Home) GetLights(ctx context.Context) (map[string]LightGet, error) {
 	}
 
 	return lights, nil
+}
+
+func (h *Home) GetLightById(ctx context.Context, lightId string) (*LightGet, error) {
+	resp, err := h.api.GetLightWithResponse(ctx, lightId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
 }
 
 func (l *LightGet) IsOn() bool {
@@ -283,6 +450,42 @@ func (h *Home) GetScenes(ctx context.Context) (map[string]SceneGet, error) {
 	return scenes, nil
 }
 
+func (h *Home) GetSceneById(ctx context.Context, sceneId string) (*SceneGet, error) {
+	resp, err := h.api.GetSceneWithResponse(ctx, sceneId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) CreateScene(ctx context.Context, body ScenePost) (*ResourceIdentifier, error) {
+	resp, err := h.api.CreateSceneWithResponse(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
 func (h *Home) UpdateScene(ctx context.Context, sceneId string, body ScenePut) error {
 	resp, err := h.api.UpdateSceneWithResponse(ctx, sceneId, body)
 	if err != nil {
@@ -294,6 +497,409 @@ func (h *Home) UpdateScene(ctx context.Context, sceneId string, body ScenePut) e
 	}
 
 	return nil
+}
+
+func (h *Home) DeleteScene(ctx context.Context, sceneId string) error {
+	resp, err := h.api.DeleteSceneWithResponse(ctx, sceneId)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+// ActivateScene activates a scene by its ID.
+func (h *Home) ActivateScene(ctx context.Context, sceneId string) error {
+	action := SceneRecallActionActive
+	return h.UpdateScene(ctx, sceneId, ScenePut{
+		Recall: &SceneRecall{
+			Action: &action,
+		},
+	})
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// SMART SCENE
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetSmartScenes(ctx context.Context) (map[string]SmartSceneGet, error) {
+	resp, err := h.api.GetSmartScenesWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	scenes := make(map[string]SmartSceneGet)
+
+	for _, scene := range data {
+		scenes[*scene.Id] = scene
+	}
+
+	return scenes, nil
+}
+
+func (h *Home) GetSmartSceneById(ctx context.Context, smartSceneId string) (*SmartSceneGet, error) {
+	resp, err := h.api.GetSmartSceneWithResponse(ctx, smartSceneId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) CreateSmartScene(ctx context.Context, body SmartScenePost) (*ResourceIdentifier, error) {
+	resp, err := h.api.CreateSmartSceneWithResponse(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) UpdateSmartScene(ctx context.Context, smartSceneId string, body SmartScenePut) error {
+	resp, err := h.api.UpdateSmartSceneWithResponse(ctx, smartSceneId, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+func (h *Home) DeleteSmartScene(ctx context.Context, smartSceneId string) error {
+	resp, err := h.api.DeleteSmartSceneWithResponse(ctx, smartSceneId)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// BUTTON
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetButtons(ctx context.Context) (map[string]ButtonGet, error) {
+	resp, err := h.api.GetButtonsWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	buttons := make(map[string]ButtonGet)
+
+	for _, button := range data {
+		buttons[*button.Id] = button
+	}
+
+	return buttons, nil
+}
+
+func (h *Home) GetButtonById(ctx context.Context, buttonId string) (*ButtonGet, error) {
+	resp, err := h.api.GetButtonWithResponse(ctx, buttonId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// MOTION SENSOR
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetMotionSensors(ctx context.Context) (map[string]MotionGet, error) {
+	resp, err := h.api.GetMotionSensorsWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	sensors := make(map[string]MotionGet)
+
+	for _, sensor := range data {
+		sensors[*sensor.Id] = sensor
+	}
+
+	return sensors, nil
+}
+
+func (h *Home) GetMotionSensorById(ctx context.Context, motionSensorId string) (*MotionGet, error) {
+	resp, err := h.api.GetMotionSensorWithResponse(ctx, motionSensorId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// TEMPERATURE SENSOR
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetTemperatureSensors(ctx context.Context) (map[string]TemperatureGet, error) {
+	resp, err := h.api.GetTemperaturesWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	sensors := make(map[string]TemperatureGet)
+
+	for _, sensor := range data {
+		sensors[*sensor.Id] = sensor
+	}
+
+	return sensors, nil
+}
+
+func (h *Home) GetTemperatureSensorById(ctx context.Context, temperatureId string) (*TemperatureGet, error) {
+	resp, err := h.api.GetTemperatureWithResponse(ctx, temperatureId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// ENTERTAINMENT CONFIGURATION
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetEntertainmentConfigurations(ctx context.Context) (map[string]EntertainmentConfigurationGet, error) {
+	resp, err := h.api.GetEntertainmentConfigurationsWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	configs := make(map[string]EntertainmentConfigurationGet)
+
+	for _, config := range data {
+		configs[*config.Id] = config
+	}
+
+	return configs, nil
+}
+
+func (h *Home) GetEntertainmentConfigurationById(ctx context.Context, entertainmentConfigurationId string) (*EntertainmentConfigurationGet, error) {
+	resp, err := h.api.GetEntertainmentConfigurationWithResponse(ctx, entertainmentConfigurationId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+// StartEntertainment starts entertainment mode for the given configuration.
+func (h *Home) StartEntertainment(ctx context.Context, entertainmentConfigurationId string) error {
+	action := EntertainmentConfigurationPutActionStart
+	return h.UpdateEntertainmentConfiguration(ctx, entertainmentConfigurationId, EntertainmentConfigurationPut{
+		Action: &action,
+	})
+}
+
+// StopEntertainment stops entertainment mode for the given configuration.
+func (h *Home) StopEntertainment(ctx context.Context, entertainmentConfigurationId string) error {
+	action := EntertainmentConfigurationPutActionStop
+	return h.UpdateEntertainmentConfiguration(ctx, entertainmentConfigurationId, EntertainmentConfigurationPut{
+		Action: &action,
+	})
+}
+
+func (h *Home) UpdateEntertainmentConfiguration(ctx context.Context, entertainmentConfigurationId string, body EntertainmentConfigurationPut) error {
+	resp, err := h.api.UpdateEntertainmentConfigurationWithResponse(ctx, entertainmentConfigurationId, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// BRIDGE
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetBridges(ctx context.Context) (map[string]BridgeGet, error) {
+	resp, err := h.api.GetBridgesWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	bridges := make(map[string]BridgeGet)
+
+	for _, bridge := range data {
+		bridges[*bridge.Id] = bridge
+	}
+
+	return bridges, nil
+}
+
+func (h *Home) GetBridge(ctx context.Context) (*BridgeGet, error) {
+	bridges, err := h.GetBridges(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(bridges) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	// Return the first (and typically only) bridge
+	for _, bridge := range bridges {
+		return &bridge, nil
+	}
+
+	return nil, ErrEmptyResponse
+}
+
+func (h *Home) UpdateBridge(ctx context.Context, bridgeId string, body BridgePut) error {
+	resp, err := h.api.UpdateBridgeWithResponse(ctx, bridgeId, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// DEVICE POWER
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetDevicePowers(ctx context.Context) (map[string]DevicePowerGet, error) {
+	resp, err := h.api.GetDevicePowersWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	powers := make(map[string]DevicePowerGet)
+
+	for _, power := range data {
+		powers[*power.Id] = power
+	}
+
+	return powers, nil
+}
+
+func (h *Home) GetDevicePowerById(ctx context.Context, devicePowerId string) (*DevicePowerGet, error) {
+	resp, err := h.api.GetDevicePowerWithResponse(ctx, devicePowerId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	data := *(*resp.JSON200).Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
 }
 
 //

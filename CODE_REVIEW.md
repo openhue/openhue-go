@@ -75,87 +75,25 @@ http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSk
 
 ---
 
-## 📊 API Coverage Gaps
+## 📊 API Coverage Gaps ✅ **FIXED**
+**Status**: Fixed in branch `feat/api-coverage`
 
-The library currently exposes only a **small subset** of available Hue API endpoints. Here are high-priority additions:
+The following resources and operations have been implemented:
 
-### Missing Core Resources
+### Core Resources Implemented
+- **Zones**: GetZones, GetZoneById, CreateZone, UpdateZone, DeleteZone
+- **Smart Scenes**: GetSmartScenes, GetSmartSceneById, CreateSmartScene, UpdateSmartScene, DeleteSmartScene
+- **Buttons/Switches**: GetButtons, GetButtonById
+- **Motion Sensors**: GetMotionSensors, GetMotionSensorById
+- **Temperature Sensors**: GetTemperatureSensors, GetTemperatureSensorById
+- **Entertainment Areas**: GetEntertainmentConfigurations, GetEntertainmentConfigurationById, StartEntertainment, StopEntertainment, UpdateEntertainmentConfiguration
+- **Bridge Information**: GetBridges, GetBridge, UpdateBridge
+- **Device Power & Battery**: GetDevicePowers, GetDevicePowerById
 
-#### 1. **Zones** (Available but not wrapped)
-```go
-// Add to openhue.go
-func (h *Home) GetZones(ctx context.Context) (map[string]ZoneGet, error)
-func (h *Home) GetZoneById(ctx context.Context, zoneId string) (*ZoneGet, error)
-func (h *Home) CreateZone(ctx context.Context, body CreateZoneJSONRequestBody) (*ZoneGet, error)
-func (h *Home) UpdateZone(ctx context.Context, zoneId string, body UpdateZoneJSONRequestBody) error
-func (h *Home) DeleteZone(ctx context.Context, zoneId string) error
-```
-
-#### 2. **Smart Scenes** (Available but not wrapped)
-```go
-func (h *Home) GetSmartScenes(ctx context.Context) (map[string]SmartSceneGet, error)
-func (h *Home) CreateSmartScene(ctx context.Context, body CreateSmartSceneJSONRequestBody) (*SmartSceneGet, error)
-func (h *Home) UpdateSmartScene(ctx context.Context, sceneId string, body UpdateSmartSceneJSONRequestBody) error
-func (h *Home) DeleteSmartScene(ctx context.Context, sceneId string) error
-```
-
-#### 3. **Buttons/Switches** (Available but not wrapped)
-```go
-func (h *Home) GetButtons(ctx context.Context) (map[string]ButtonGet, error)
-func (h *Home) GetButtonById(ctx context.Context, buttonId string) (*ButtonGet, error)
-```
-
-#### 4. **Motion Sensors** (Available but not wrapped)
-```go
-func (h *Home) GetMotionSensors(ctx context.Context) (map[string]MotionSensorGet, error)
-func (h *Home) GetMotionSensorById(ctx context.Context, sensorId string) (*MotionSensorGet, error)
-```
-
-#### 5. **Temperature Sensors** (Available but not wrapped)
-```go
-func (h *Home) GetTemperatureSensors(ctx context.Context) (map[string]TemperatureGet, error)
-func (h *Home) GetTemperatureSensorById(ctx context.Context, sensorId string) (*TemperatureGet, error)
-```
-
-#### 6. **Entertainment Areas** (Available but not wrapped)
-```go
-func (h *Home) GetEntertainmentConfigurations(ctx context.Context) (map[string]EntertainmentConfigurationGet, error)
-func (h *Home) StartEntertainment(ctx context.Context, entertainmentId string) error
-func (h *Home) StopEntertainment(ctx context.Context, entertainmentId string) error
-```
-
-#### 7. **Bridge Information** (Available but not wrapped)
-```go
-func (h *Home) GetBridge(ctx context.Context) (*BridgeGet, error)
-func (h *Home) UpdateBridge(ctx context.Context, bridgeId string, body UpdateBridgeJSONRequestBody) error
-```
-
-#### 8. **Device Power & Battery** (Available but not wrapped)
-```go
-func (h *Home) GetDevicePowers(ctx context.Context) (map[string]DevicePowerGet, error)
-func (h *Home) GetDevicePowerById(ctx context.Context, deviceId string) (*DevicePowerGet, error)
-```
-
-### Missing Scene Operations
-```go
-func (h *Home) GetSceneById(ctx context.Context, sceneId string) (*SceneGet, error)
-func (h *Home) CreateScene(ctx context.Context, body CreateSceneJSONRequestBody) (*SceneGet, error)
-func (h *Home) DeleteScene(ctx context.Context, sceneId string) error
-func (h *Home) ActivateScene(ctx context.Context, sceneId string) error // Common use case!
-```
-
-### Missing Room Operations
-```go
-func (h *Home) GetRoomById(ctx context.Context, roomId string) (*RoomGet, error)
-func (h *Home) CreateRoom(ctx context.Context, body CreateRoomJSONRequestBody) (*RoomGet, error)
-func (h *Home) UpdateRoom(ctx context.Context, roomId string, body UpdateRoomJSONRequestBody) error
-func (h *Home) DeleteRoom(ctx context.Context, roomId string) error
-```
-
-### Missing Light Operations
-```go
-func (h *Home) GetLightById(ctx context.Context, lightId string) (*LightGet, error)
-```
+### Additional Operations Implemented
+- **Scene Operations**: GetSceneById, CreateScene, DeleteScene, ActivateScene
+- **Room Operations**: GetRoomById, CreateRoom, UpdateRoom, DeleteRoom
+- **Light Operations**: GetLightById
 
 ---
 
@@ -538,16 +476,8 @@ func (h *Home) TurnOffAllLights(ctx context.Context) error
 func (h *Home) TurnOffRoom(ctx context.Context, roomId string) error
 ```
 
-### 3. **Scene Activation Helper**
-```go
-func (h *Home) ActivateScene(ctx context.Context, sceneId string) error {
-    return h.UpdateScene(ctx, sceneId, ScenePut{
-        Recall: &SceneRecall{
-            Action: Ptr("active"),
-        },
-    })
-}
-```
+### 3. **Scene Activation Helper** ✅ **IMPLEMENTED**
+The `ActivateScene` helper method has been added to conveniently activate scenes.
 
 ### 4. **Color Helpers**
 ```go
@@ -581,7 +511,7 @@ update := LightPut{
 4. ✅ Add status code checking to all update methods
 
 ### Medium Priority (Usability)
-5. Add Zones, Smart Scenes, Sensors wrappers
+5. ✅ Add Zones, Smart Scenes, Sensors wrappers
 6. Add convenience methods (TurnOnLight, SetBrightness, etc.)
 7. ✅ Improve error handling with specific error types
 8. Add builder patterns for complex updates
@@ -596,11 +526,17 @@ update := LightPut{
 
 ## Conclusion
 
-This library has a solid foundation but needs critical security fixes before production use. The auto-generation approach is excellent, but the manual wrappers need significant expansion to cover common use cases. Focus on:
+This library has a solid foundation and is now production-ready. The auto-generation approach is excellent, and the high-level wrappers now cover all major Hue API resources.
 
-1. **Security first**: Fix the global transport issue immediately
-2. **API coverage**: Add wrappers for Zones, Sensors, and Smart Scenes
-3. **Ergonomics**: Add convenience methods and builders
-4. **Robustness**: Add proper context support and error handling
+**Completed:**
+1. ✅ **Security**: Fixed global transport issue with proper TLS certificate handling
+2. ✅ **API coverage**: Added wrappers for Zones, Sensors, Smart Scenes, Entertainment, Bridge, Device Power, and more
+3. ✅ **Robustness**: Added proper context support and comprehensive error handling
 
-The library shows good potential and with these improvements would be excellent for production use.
+**Remaining improvements:**
+- Add convenience methods (TurnOnLight, SetBrightness, etc.)
+- Add builder patterns for complex updates
+- Add event streaming support
+- Add bulk operation helpers
+- Add color conversion utilities
+- Expand test coverage
