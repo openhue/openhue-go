@@ -108,12 +108,26 @@ func extractErrorDescriptions(errs []Error) string {
 
 	var descriptions []string
 	for _, e := range errs {
-		if e.Description != nil && *e.Description != "" {
-			descriptions = append(descriptions, *e.Description)
+		if d := stringValue(e.Description); d != "" {
+			descriptions = append(descriptions, d)
 		}
 	}
 
 	return strings.Join(descriptions, "; ")
+}
+
+// stringValue normalizes generated optional strings, which are *string or string depending on the
+// oapi-codegen version used to generate openhue.gen.go.
+func stringValue(v any) string {
+	switch d := v.(type) {
+	case string:
+		return d
+	case *string:
+		if d != nil {
+			return *d
+		}
+	}
+	return ""
 }
 
 // errorList normalizes ErrorResponse.Errors, which is a *[]Error or a []Error depending on the

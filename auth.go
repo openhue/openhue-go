@@ -68,9 +68,9 @@ func (a *authenticatorImpl) Authenticate() (string, bool, error) {
 
 	auth := (*resp.JSON200)[0]
 	if auth.Error != nil {
-		desc := "link button not pressed"
-		if auth.Error.Description != nil {
-			desc = *auth.Error.Description
+		desc := stringValue(auth.Error.Description)
+		if desc == "" {
+			desc = "link button not pressed"
 		}
 		return "", true, errors.New(desc)
 	}
