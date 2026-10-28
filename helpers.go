@@ -1,9 +1,11 @@
 package openhue
 
 import (
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
+	"path/filepath"
 )
 
 // Toggleable defines resources that have an On field and can therefore be switched to on or off, mainly lights.
@@ -12,6 +14,7 @@ type Toggleable interface {
 	IsOn() bool
 }
 
+// Conf holds the Bridge IP and API key read from the OpenHue configuration file.
 type Conf struct {
 	bridgeIP string
 	apiKey   string
@@ -25,7 +28,7 @@ func LoadConf() (*Conf, error) {
 		return nil, fmt.Errorf("unable to get home directory: %w", err)
 	}
 
-	yamlFile, err := os.ReadFile(homedir + "/.openhue/config.yaml")
+	yamlFile, err := os.ReadFile(filepath.Join(homedir, ".openhue", "config.yaml"))
 	if err != nil {
 		return nil, fmt.Errorf("unable to read ~/.openhue/config.yaml: %w", err)
 	}
@@ -37,7 +40,16 @@ func LoadConf() (*Conf, error) {
 		return nil, fmt.Errorf("unable to parse ~/.openhue/config.yaml: %w", err)
 	}
 
-	return &Conf{c["bridge"].(string), c["key"].(string)}, nil
+	bridge, ok := c["bridge"].(string)
+	if !ok || bridge == "" {
+		return nil, errors.New("~/.openhue/config.yaml: missing or invalid 'bridge' entry")
+	}
+	key, ok := c["key"].(string)
+	if !ok || key == "" {
+		return nil, errors.New("~/.openhue/config.yaml: missing or invalid 'key' entry")
+	}
+
+	return &Conf{bridgeIP: bridge, apiKey: key}, nil
 }
 
 // LoadConfNoError is similar to LoadConf() except that it will fatal if there are any errors.

@@ -896,4 +896,3 @@ func (c *ClientWithResponsesMock) UpdateZoneWithResponse(ctx context.Context, zo
 	args := c.Called(ctx, zoneId, body, reqEditors)
 	return args.Get(0).(*UpdateZoneResponse), args.Error(1)
 }
-

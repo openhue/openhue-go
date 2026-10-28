@@ -270,3 +270,23 @@ func TestNewHome_DefaultTimeout(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, home)
 }
+
+func TestLightGet_IsOnAndToggle_NilSafe(t *testing.T) {
+	var l LightGet
+	assert.False(t, l.IsOn())
+	assert.True(t, *l.Toggle().On)
+
+	on := true
+	l.On = &On{On: &on}
+	assert.True(t, l.IsOn())
+	assert.False(t, *l.Toggle().On)
+}
+
+func TestGetDevices_NilBody(t *testing.T) {
+	home, mockClient := NewTestHome()
+	mockClient.On("GetDevicesWithResponse", mock.Anything, mock.Anything).Return(
+		&GetDevicesResponse{HTTPResponse: &http.Response{StatusCode: http.StatusOK}}, nil)
+
+	_, err := home.GetDevices(context.Background())
+	assert.ErrorIs(t, err, ErrEmptyResponse)
+}

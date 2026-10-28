@@ -22,6 +22,7 @@ type authenticatorImpl struct {
 
 type authOpt func(b *authenticatorImpl)
 
+// NewAuthenticator creates an Authenticator targeting the Bridge at bridgeIP.
 func NewAuthenticator(bridgeIP string, opts ...authOpt) (Authenticator, error) {
 	client, err := newClient(bridgeIP, "", nil)
 	if err != nil {
@@ -61,20 +62,34 @@ func (a *authenticatorImpl) Authenticate() (string, bool, error) {
 		return "", false, fmt.Errorf("unable to reach the Bridge, verify that the IP is correct")
 	}
 
+	if len(*resp.JSON200) == 0 {
+		return "", false, errors.New("empty authentication response from the Bridge")
+	}
+
 	auth := (*resp.JSON200)[0]
 	if auth.Error != nil {
-		return "", true, errors.New(*auth.Error.Description)
+		desc := "link button not pressed"
+		if auth.Error.Description != nil {
+			desc = *auth.Error.Description
+		}
+		return "", true, errors.New(desc)
+	}
+
+	if auth.Success == nil || auth.Success.Username == nil {
+		return "", false, errors.New("authentication response did not contain an API key")
 	}
 
 	return *auth.Success.Username, false, nil
 }
 
+// WithDeviceType sets the device type reported to the Bridge. Defaults to the host name.
 func WithDeviceType(deviceType string) authOpt {
 	return func(b *authenticatorImpl) {
 		b.deviceType = deviceType
 	}
 }
 
+// WithGenerateClientKey controls whether the Bridge also generates a client key. Defaults to true.
 func WithGenerateClientKey(generateClientKey bool) authOpt {
 	return func(b *authenticatorImpl) {
 		b.generateClientKey = generateClientKey
