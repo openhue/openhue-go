@@ -182,6 +182,14 @@ const (
 	EntertainmentConfigurationPutConfigurationTypeScreen   EntertainmentConfigurationPutConfigurationType = "screen"
 )
 
+// Defines values for EventType.
+const (
+	EventTypeAdd    EventType = "add"
+	EventTypeDelete EventType = "delete"
+	EventTypeError  EventType = "error"
+	EventTypeUpdate EventType = "update"
+)
+
 // Defines values for GroupedLightPutType.
 const (
 	GroupedLight GroupedLightPutType = "grouped_light"
@@ -265,6 +273,14 @@ const (
 	LightGetColorGamutTypeOther LightGetColorGamutType = "other"
 )
 
+// Defines values for LightGetMetadataFunction.
+const (
+	LightGetMetadataFunctionDecorative LightGetMetadataFunction = "decorative"
+	LightGetMetadataFunctionFunctional LightGetMetadataFunction = "functional"
+	LightGetMetadataFunctionMixed      LightGetMetadataFunction = "mixed"
+	LightGetMetadataFunctionUnknown    LightGetMetadataFunction = "unknown"
+)
+
 // Defines values for LightGetMode.
 const (
 	LightGetModeNormal    LightGetMode = "normal"
@@ -297,6 +313,14 @@ const (
 	LightGetPowerupPresetLastOnState LightGetPowerupPreset = "last_on_state"
 	LightGetPowerupPresetPowerfail   LightGetPowerupPreset = "powerfail"
 	LightGetPowerupPresetSafety      LightGetPowerupPreset = "safety"
+)
+
+// Defines values for LightGetProductDataFunction.
+const (
+	LightGetProductDataFunctionDecorative LightGetProductDataFunction = "decorative"
+	LightGetProductDataFunctionFunctional LightGetProductDataFunction = "functional"
+	LightGetProductDataFunctionMixed      LightGetProductDataFunction = "mixed"
+	LightGetProductDataFunctionUnknown    LightGetProductDataFunction = "unknown"
 )
 
 // Defines values for LightPutMode.
@@ -763,7 +787,7 @@ const (
 // ActionGet defines model for ActionGet.
 type ActionGet struct {
 	// Action The action to be executed on recall
-	Action *struct {
+	Action struct {
 		Color            *Color            `json:"color,omitempty"`
 		ColorTemperature *ColorTemperature `json:"color_temperature,omitempty"`
 		Dimming          *Dimming          `json:"dimming,omitempty"`
@@ -776,18 +800,8 @@ type ActionGet struct {
 		// Gradient Basic feature containing gradient properties.
 		Gradient *Gradient `json:"gradient,omitempty"`
 		On       *On       `json:"on,omitempty"`
-	} `json:"action,omitempty"`
-
-	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
-
-	// IdV1 Clip v1 resource identifier
-	IdV1   *string             `json:"id_v1,omitempty"`
-	Owner  *ResourceIdentifier `json:"owner,omitempty"`
-	Target *ResourceIdentifier `json:"target,omitempty"`
-
-	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	} `json:"action"`
+	Target ResourceIdentifier `json:"target"`
 }
 
 // ActionPost defines model for ActionPost.
@@ -821,8 +835,8 @@ type Alert struct {
 
 // ApiResponse defines model for ApiResponse.
 type ApiResponse struct {
-	Data   *[]map[string]interface{} `json:"data,omitempty"`
-	Errors *[]Error                  `json:"errors,omitempty"`
+	Data   []map[string]interface{} `json:"data"`
+	Errors []Error                  `json:"errors"`
 }
 
 // BehaviorInstanceGet defines model for BehaviorInstanceGet.
@@ -835,7 +849,7 @@ type BehaviorInstanceGet struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
@@ -854,7 +868,7 @@ type BehaviorInstanceGet struct {
 	Status *BehaviorInstanceGetStatus `json:"status,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // BehaviorInstanceGetStatus defines model for BehaviorInstanceGet.Status.
@@ -884,7 +898,7 @@ type BehaviorScriptGet struct {
 	Description *string `json:"description,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1     *string `json:"id_v1,omitempty"`
@@ -900,7 +914,7 @@ type BehaviorScriptGet struct {
 	TriggerSchema *map[string]interface{} `json:"trigger_schema,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 
 	// Version Version of the behavior script.
 	Version *string `json:"version,omitempty"`
@@ -928,7 +942,7 @@ type BellButtonGet struct {
 	} `json:"bell,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1     *string `json:"id_v1,omitempty"`
@@ -936,10 +950,10 @@ type BellButtonGet struct {
 		// ControlId Control identifier of the switch, unique within the device.
 		ControlId *int `json:"control_id,omitempty"`
 	} `json:"metadata,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // BellButtonGetBellBellReportEvent The bell button event that was triggered.
@@ -956,20 +970,20 @@ type BellButtonPut struct {
 
 // BridgeGet defines model for BridgeGet.
 type BridgeGet struct {
-	// BridgeId Unique identifier of the bridge as printed on the device. Lower case (shouldn't it be upper case?)
-	BridgeId *string `json:"bridge_id,omitempty"`
+	// BridgeId Unique identifier of the bridge as printed on the device. Lower case.
+	BridgeId string `json:"bridge_id"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1     *string             `json:"id_v1,omitempty"`
-	Owner    *ResourceIdentifier `json:"owner,omitempty"`
-	TimeZone *struct {
+	IdV1     *string            `json:"id_v1,omitempty"`
+	Owner    ResourceIdentifier `json:"owner"`
+	TimeZone struct {
 		// TimeZone Time zone where the user's home is located (as Olson ID).
-		TimeZone *string `json:"time_zone,omitempty"`
-	} `json:"time_zone,omitempty"`
-	Type *BridgeGetType `json:"type,omitempty"`
+		TimeZone string `json:"time_zone"`
+	} `json:"time_zone"`
+	Type BridgeGetType `json:"type"`
 }
 
 // BridgeGetType defines model for BridgeGet.Type.
@@ -978,10 +992,10 @@ type BridgeGetType string
 // BridgeHomeGet defines model for BridgeHomeGet.
 type BridgeHomeGet struct {
 	// Children Child devices/services to group by the derived group.
-	Children *[]ResourceIdentifier `json:"children,omitempty"`
+	Children []ResourceIdentifier `json:"children"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
@@ -991,8 +1005,8 @@ type BridgeHomeGet struct {
 	// This includes all services of a device grouped in the group hierarchy given by child relation.
 	// Aggregation is per service type, ie every service type which can be grouped has a corresponding definition
 	// of grouped type Supported types: – grouped_light
-	Services *[]ResourceIdentifier `json:"services,omitempty"`
-	Type     *BridgeHomeGetType    `json:"type,omitempty"`
+	Services []ResourceIdentifier `json:"services"`
+	Type     BridgeHomeGetType    `json:"type"`
 }
 
 // BridgeHomeGetType defines model for BridgeHomeGet.Type.
@@ -1031,7 +1045,7 @@ type ButtonGet struct {
 	} `json:"button,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1     *string `json:"id_v1,omitempty"`
@@ -1039,10 +1053,10 @@ type ButtonGet struct {
 		// ControlId Control identifier of the switch, unique within the device.
 		ControlId *int `json:"control_id,omitempty"`
 	} `json:"metadata,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // ButtonGetButtonButtonReportEvent The button event that was triggered.
@@ -1075,7 +1089,7 @@ type CameraMotionGet struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1   *string `json:"id_v1,omitempty"`
@@ -1088,10 +1102,10 @@ type CameraMotionGet struct {
 			Motion *bool `json:"motion,omitempty"`
 		} `json:"motion_report,omitempty"`
 	} `json:"motion,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // CameraMotionPut defines model for CameraMotionPut.
@@ -1106,7 +1120,7 @@ type CameraMotionPut struct {
 // Color defines model for Color.
 type Color struct {
 	// Xy CIE XY gamut position
-	Xy *GamutPosition `json:"xy,omitempty"`
+	Xy GamutPosition `json:"xy"`
 }
 
 // ColorPaletteGet defines model for ColorPaletteGet.
@@ -1155,14 +1169,14 @@ type ContactGet struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // ContactGetContactReportState State of the contact sensor.
@@ -1183,7 +1197,7 @@ type ConvenienceAreaMotionGet struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1   *string `json:"id_v1,omitempty"`
@@ -1191,10 +1205,10 @@ type ConvenienceAreaMotionGet struct {
 		// Motion True if motion is detected.
 		Motion *bool `json:"motion,omitempty"`
 	} `json:"motion,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // ConvenienceAreaMotionPut defines model for ConvenienceAreaMotionPut.
@@ -1215,23 +1229,26 @@ type DayTimeslotsGet struct {
 // DeviceGet defines model for DeviceGet.
 type DeviceGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1     *string `json:"id_v1,omitempty"`
-	Metadata *struct {
+	IdV1 *string `json:"id_v1,omitempty"`
+
+	// Identify Triggers a visual identification sequence on the device
+	Identify map[string]interface{} `json:"identify"`
+	Metadata struct {
 		// Archetype The default archetype given by manufacturer. Can be changed by user.
-		Archetype *ProductArchetype `json:"archetype,omitempty"`
+		Archetype ProductArchetype `json:"archetype"`
 
 		// Name Human readable name of a resource
-		Name *string `json:"name,omitempty"`
-	} `json:"metadata,omitempty"`
-	Owner       *ResourceIdentifier `json:"owner,omitempty"`
-	ProductData *ProductData        `json:"product_data,omitempty"`
+		Name string `json:"name"`
+	} `json:"metadata"`
+	Owner       ResourceIdentifier `json:"owner"`
+	ProductData ProductData        `json:"product_data"`
 
 	// Services References all services providing control and state of the device.
-	Services *[]ResourceIdentifier `json:"services,omitempty"`
-	Type     *DeviceGetType        `json:"type,omitempty"`
+	Services []ResourceIdentifier `json:"services"`
+	Type     DeviceGetType        `json:"type"`
 	Usertest *struct {
 		Status *DeviceGetUsertestStatus `json:"status,omitempty"`
 
@@ -1251,12 +1268,12 @@ type DeviceGetUsertestStatus string
 // DevicePowerGet defines model for DevicePowerGet.
 type DevicePowerGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1       *string             `json:"id_v1,omitempty"`
-	Owner      *ResourceIdentifier `json:"owner,omitempty"`
-	PowerState *struct {
+	IdV1       *string            `json:"id_v1,omitempty"`
+	Owner      ResourceIdentifier `json:"owner"`
+	PowerState struct {
 		// BatteryLevel The current battery state in percent, only for battery powered devices.
 		BatteryLevel *int `json:"battery_level,omitempty"`
 
@@ -1266,10 +1283,10 @@ type DevicePowerGet struct {
 		// - `low` – battery level low, some features (e.g. software update) might stop working, please change battery soon
 		// - `critical` – battery level critical, device can fail any moment
 		BatteryState *DevicePowerGetPowerStateBatteryState `json:"battery_state,omitempty"`
-	} `json:"power_state,omitempty"`
+	} `json:"power_state"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // DevicePowerGetPowerStateBatteryState Status of the power source of a device, only for battery powered devices.
@@ -1314,11 +1331,11 @@ type DevicePutType string
 // DeviceSoftwareUpdateGet defines model for DeviceSoftwareUpdateGet.
 type DeviceSoftwareUpdateGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Problems Problems preventing update.
 	Problems *[]string `json:"problems,omitempty"`
@@ -1327,7 +1344,7 @@ type DeviceSoftwareUpdateGet struct {
 	State *DeviceSoftwareUpdateGetState `json:"state,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // DeviceSoftwareUpdateGetState Current state of the software update.
@@ -1350,7 +1367,7 @@ type DeviceSoftwareUpdatePutInstallInstallState string
 // Dimming defines model for Dimming.
 type Dimming struct {
 	// Brightness Brightness percentage. value cannot be 0, writing 0 changes it to lowest possible brightness
-	Brightness *Brightness `json:"brightness,omitempty"`
+	Brightness Brightness `json:"brightness"`
 }
 
 // DimmingDelta defines model for DimmingDelta.
@@ -1375,6 +1392,45 @@ type Effects struct {
 	Effect *SupportedEffects `json:"effect,omitempty"`
 }
 
+// EffectsV2 Extended effect control with support for custom color, color temperature, and speed parameters.
+// This property is present on lights that support the newer effects engine and allows fine-grained
+// control over effect appearance beyond what the basic `effects` property provides.
+type EffectsV2 struct {
+	// Action Set effect with optional parameters.
+	Action *struct {
+		Effect *SupportedEffects `json:"effect,omitempty"`
+
+		// Parameters Parameters for controlling the appearance of an active effect.
+		Parameters *EffectsV2Parameters `json:"parameters,omitempty"`
+	} `json:"action,omitempty"`
+
+	// Status Current effect status and active parameters.
+	Status *struct {
+		Effect *SupportedEffects `json:"effect,omitempty"`
+
+		// EffectValues Possible effect values supported by this light.
+		EffectValues *[]SupportedEffects `json:"effect_values,omitempty"`
+
+		// Parameters Parameters for controlling the appearance of an active effect.
+		Parameters *EffectsV2Parameters `json:"parameters,omitempty"`
+	} `json:"status,omitempty"`
+}
+
+// EffectsV2Parameters Parameters for controlling the appearance of an active effect.
+type EffectsV2Parameters struct {
+	Color            *Color `json:"color,omitempty"`
+	ColorTemperature *struct {
+		// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
+		Mirek *Mirek `json:"mirek,omitempty"`
+
+		// MirekValid Indication whether the mirek value is valid for this effect
+		MirekValid *bool `json:"mirek_valid,omitempty"`
+	} `json:"color_temperature,omitempty"`
+
+	// Speed Speed of the effect animation. 0.0 is slowest, 1.0 is fastest.
+	Speed *float32 `json:"speed,omitempty"`
+}
+
 // EntertainmentConfigurationGet defines model for EntertainmentConfigurationGet.
 type EntertainmentConfigurationGet struct {
 	Channels *[]struct {
@@ -1394,7 +1450,7 @@ type EntertainmentConfigurationGet struct {
 	ConfigurationType *EntertainmentConfigurationGetConfigurationType `json:"configuration_type,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1          *string               `json:"id_v1,omitempty"`
@@ -1422,7 +1478,7 @@ type EntertainmentConfigurationGet struct {
 	} `json:"stream_proxy,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // EntertainmentConfigurationGetConfigurationType Type of entertainment configuration.
@@ -1457,14 +1513,14 @@ type EntertainmentConfigurationPutConfigurationType string
 // EntertainmentGet defines model for EntertainmentGet.
 type EntertainmentGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
 	// MaxStreams Maximum number of streams this device supports.
-	MaxStreams *int                `json:"max_streams,omitempty"`
-	Owner      *ResourceIdentifier `json:"owner,omitempty"`
+	MaxStreams *int               `json:"max_streams,omitempty"`
+	Owner      ResourceIdentifier `json:"owner"`
 
 	// Proxy Indicates if the device is acting as entertainment proxy.
 	Proxy *bool `json:"proxy,omitempty"`
@@ -1481,7 +1537,7 @@ type EntertainmentGet struct {
 	} `json:"segments,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // EntertainmentPut defines model for EntertainmentPut.
@@ -1493,27 +1549,56 @@ type EntertainmentPut struct {
 // Error defines model for Error.
 type Error struct {
 	// Description a human-readable explanation specific to this occurrence of the problem.
-	Description *string `json:"description,omitempty"`
+	Description string `json:"description"`
 }
 
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
-	Errors *[]Error `json:"errors,omitempty"`
+	Errors []Error `json:"errors"`
 }
+
+// Event defines model for Event.
+type Event struct {
+	// Creationtime Time of creation for this batch of events.
+	Creationtime time.Time `json:"creationtime"`
+
+	// Data Array of resources affected by this batch of events.
+	Data []Event_Data_Item `json:"data"`
+
+	// Id A UUID that identifies this batch of events.
+	Id   string    `json:"id"`
+	Type EventType `json:"type"`
+}
+
+// Event_Data_Item defines model for Event.data.Item.
+type Event_Data_Item struct {
+	// Id Unique identifier representing a specific resource instance
+	Id string `json:"id"`
+
+	// IdV1 Clip v1 resource identifier
+	IdV1 *string `json:"id_v1,omitempty"`
+
+	// Type Type of the supported resources
+	Type                 string                 `json:"type"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// EventType defines model for Event.Type.
+type EventType string
 
 // GamutPosition CIE XY gamut position
 type GamutPosition struct {
 	// X X position in color gamut
-	X *float32 `json:"x,omitempty"`
+	X float32 `json:"x"`
 
 	// Y y position in color gamut
-	Y *float32 `json:"y,omitempty"`
+	Y float32 `json:"y"`
 }
 
 // GeofenceClientGet defines model for GeofenceClientGet.
 type GeofenceClientGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
@@ -1525,7 +1610,7 @@ type GeofenceClientGet struct {
 	Name *string `json:"name,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // GeofenceClientPut defines model for GeofenceClientPut.
@@ -1543,7 +1628,7 @@ type GeofenceClientPut struct {
 // GeolocationGet defines model for GeolocationGet.
 type GeolocationGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
@@ -1552,7 +1637,7 @@ type GeolocationGet struct {
 	IsConfigured *bool `json:"is_configured,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // GeolocationPut defines model for GeolocationPut.
@@ -1579,12 +1664,12 @@ type GroupedLightGet struct {
 	Dimming *Dimming `json:"dimming,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	On    *On                 `json:"on,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	On    *On                `json:"on,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Signaling Feature containing basic signaling properties.
 	Signaling *struct {
@@ -1593,13 +1678,13 @@ type GroupedLightGet struct {
 	} `json:"signaling,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // GroupedLightLevelGet defines model for GroupedLightLevelGet.
 type GroupedLightLevelGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1  *string `json:"id_v1,omitempty"`
@@ -1610,10 +1695,10 @@ type GroupedLightLevelGet struct {
 		// LightLevelValid True if light level is valid.
 		LightLevelValid *bool `json:"light_level_valid,omitempty"`
 	} `json:"light,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // GroupedLightLevelPut defines model for GroupedLightLevelPut.
@@ -1647,7 +1732,7 @@ type GroupedLightPutType string
 // GroupedMotionGet defines model for GroupedMotionGet.
 type GroupedMotionGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1   *string `json:"id_v1,omitempty"`
@@ -1658,10 +1743,10 @@ type GroupedMotionGet struct {
 		// MotionValid True if any of the grouped motion sensors are reporting valid motion.
 		MotionValid *bool `json:"motion_valid,omitempty"`
 	} `json:"motion,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // GroupedMotionPut defines model for GroupedMotionPut.
@@ -1676,17 +1761,17 @@ type HomekitGet struct {
 	Action *HomekitGetAction `json:"action,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Status Current HomeKit pairing status.
 	Status *HomekitGetStatus `json:"status,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // HomekitGetAction Current HomeKit action.
@@ -1723,8 +1808,11 @@ type LightDynamics struct {
 
 // LightGet defines model for LightGet.
 type LightGet struct {
-	// Alert TODO
-	Alert *map[string]interface{} `json:"alert,omitempty"`
+	// Alert Joined alert control
+	Alert *struct {
+		// ActionValues Supported alert actions for this light.
+		ActionValues *[]string `json:"action_values,omitempty"`
+	} `json:"alert,omitempty"`
 	Color *struct {
 		// Gamut Color gamut of color bulb. Some bulbs do not properly return the Gamut information. In this case this is not present.
 		Gamut *struct {
@@ -1790,6 +1878,21 @@ type LightGet struct {
 		// StatusValues Possible status values in which a light could be when playing an effect.
 		StatusValues *[]SupportedEffects `json:"status_values,omitempty"`
 	} `json:"effects,omitempty"`
+
+	// EffectsV2 Extended effect control with support for custom color, color temperature, and speed parameters.
+	// This property is present on lights that support the newer effects engine and allows fine-grained
+	// control over effect appearance beyond what the basic `effects` property provides.
+	EffectsV2 *EffectsV2 `json:"effects_v2,omitempty"`
+
+	// Geometry Geometry information for pixel-addressable lights such as gradient strips.
+	Geometry *struct {
+		// PixelPositions Ordered list of pixel positions for this light. Empty for non-gradient lights.
+		PixelPositions *[]struct {
+			X *float32 `json:"x,omitempty"`
+			Y *float32 `json:"y,omitempty"`
+			Z *float32 `json:"z,omitempty"`
+		} `json:"pixel_positions,omitempty"`
+	} `json:"geometry,omitempty"`
 	Gradient *struct {
 		// Mode Mode in which the points are currently being deployed. If not provided during PUT/POST it will be defaulted to interpolated_palette
 		Mode *SupportedGradientMode `json:"mode,omitempty"`
@@ -1808,25 +1911,31 @@ type LightGet struct {
 	} `json:"gradient,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
+	// Identify Triggers identification sequence on the light
+	Identify map[string]interface{} `json:"identify"`
+
 	// Metadata Deprecated, use metadata on device level
-	Metadata *struct {
+	Metadata struct {
 		// Archetype Light archetype
-		Archetype *LightArchetype `json:"archetype,omitempty"`
+		Archetype LightArchetype `json:"archetype"`
 
 		// FixedMired A fixed mired value of the white lamp
 		FixedMired *int `json:"fixed_mired,omitempty"`
 
+		// Function Function of the light service
+		Function LightGetMetadataFunction `json:"function"`
+
 		// Name Human readable name of a resource
-		Name *string `json:"name,omitempty"`
-	} `json:"metadata,omitempty"`
-	Mode  *LightGetMode       `json:"mode,omitempty"`
-	On    *On                 `json:"on,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+		Name string `json:"name"`
+	} `json:"metadata"`
+	Mode  LightGetMode       `json:"mode"`
+	On    On                 `json:"on"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Powerup Feature containing properties to configure powerup behaviour of a lightsource.
 	Powerup *struct {
@@ -1865,6 +1974,15 @@ type LightGet struct {
 		Preset *LightGetPowerupPreset `json:"preset,omitempty"`
 	} `json:"powerup,omitempty"`
 
+	// ProductData Product data about the light.
+	ProductData *struct {
+		// Function Function of the light source.
+		Function *LightGetProductDataFunction `json:"function,omitempty"`
+	} `json:"product_data,omitempty"`
+
+	// ServiceId Service identification number. 0 indicates service of a single instance
+	ServiceId int `json:"service_id"`
+
 	// Signaling Feature containing signaling properties.
 	Signaling *struct {
 		// Colors Colors that were provided for the active effect.
@@ -1894,11 +2012,14 @@ type LightGet struct {
 	} `json:"timed_effects,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // LightGetColorGamutType The gammut types supported by hue – A Gamut of early Philips color-only products – B Limited gamut of first Hue color products – C Richer color gamut of Hue white and color ambiance products – other Color gamut of non-hue products with non-hue gamuts resp w/o gamut
 type LightGetColorGamutType string
+
+// LightGetMetadataFunction Function of the light service
+type LightGetMetadataFunction string
 
 // LightGetMode defines model for LightGet.Mode.
 type LightGetMode string
@@ -1921,19 +2042,22 @@ type LightGetPowerupOnMode string
 // LightGetPowerupPreset When setting the custom preset the additional properties can be set. For all other presets, no other properties can be included.
 type LightGetPowerupPreset string
 
+// LightGetProductDataFunction Function of the light source.
+type LightGetProductDataFunction string
+
 // LightLevelGet defines model for LightLevelGet.
 type LightLevelGet struct {
 	// Enabled true when sensor is activated, false when deactivated
-	Enabled *bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1  *string `json:"id_v1,omitempty"`
-	Light *struct {
+	Light struct {
 		// LightLevel Deprecated. Moved to light_level_report/light_level
-		LightLevel       *int `json:"light_level,omitempty"`
+		LightLevel       int `json:"light_level"`
 		LightLevelReport *struct {
 			// Changed last time the value of this property is changed.
 			Changed *time.Time `json:"changed,omitempty"`
@@ -1946,12 +2070,12 @@ type LightLevelGet struct {
 		} `json:"light_level_report,omitempty"`
 
 		// LightLevelValid Deprecated. Indication whether the value presented in light_level is valid
-		LightLevelValid *bool `json:"light_level_valid,omitempty"`
-	} `json:"light,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+		LightLevelValid bool `json:"light_level_valid"`
+	} `json:"light"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // LightLevelPut defines model for LightLevelPut.
@@ -1976,6 +2100,11 @@ type LightPut struct {
 
 	// Effects Basic feature containing effect properties.
 	Effects *Effects `json:"effects,omitempty"`
+
+	// EffectsV2 Extended effect control with support for custom color, color temperature, and speed parameters.
+	// This property is present on lights that support the newer effects engine and allows fine-grained
+	// control over effect appearance beyond what the basic `effects` property provides.
+	EffectsV2 *EffectsV2 `json:"effects_v2,omitempty"`
 
 	// Gradient Basic feature containing gradient properties.
 	Gradient *Gradient     `json:"gradient,omitempty"`
@@ -2017,17 +2146,17 @@ type MatterFabricGet struct {
 	} `json:"fabric_data,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Status Current Matter fabric status.
 	Status *MatterFabricGetStatus `json:"status,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // MatterFabricGetStatus Current Matter fabric status.
@@ -2045,17 +2174,17 @@ type MatterGet struct {
 	HasQrCode *bool `json:"has_qr_code,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
 	// MaxFabrics Maximum number of fabrics that can be added.
-	MaxFabrics *int                `json:"max_fabrics,omitempty"`
-	Owner      *ResourceIdentifier `json:"owner,omitempty"`
+	MaxFabrics *int               `json:"max_fabrics,omitempty"`
+	Owner      ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // MatterPut defines model for MatterPut.
@@ -2078,17 +2207,17 @@ type Mirek = int
 // MotionAreaCandidateGet defines model for MotionAreaCandidateGet.
 type MotionAreaCandidateGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
 	// MotionSensors List of motion sensor resources that are candidates for this area.
 	MotionSensors *[]ResourceIdentifier `json:"motion_sensors,omitempty"`
-	Owner         *ResourceIdentifier   `json:"owner,omitempty"`
+	Owner         ResourceIdentifier    `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // MotionAreaCandidatePut defines model for MotionAreaCandidatePut.
@@ -2103,17 +2232,17 @@ type MotionAreaConfigurationGet struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
 	// MotionSensors List of motion sensors in this area configuration.
 	MotionSensors *[]ResourceIdentifier `json:"motion_sensors,omitempty"`
-	Owner         *ResourceIdentifier   `json:"owner,omitempty"`
+	Owner         ResourceIdentifier    `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // MotionAreaConfigurationPut defines model for MotionAreaConfigurationPut.
@@ -2127,17 +2256,17 @@ type MotionAreaConfigurationPut struct {
 
 // MotionGet defines model for MotionGet.
 type MotionGet struct {
-	// Enabled ture when the sensor is activated, false when deactivated
-	Enabled *bool `json:"enabled,omitempty"`
+	// Enabled true when the sensor is activated, false when deactivated
+	Enabled bool `json:"enabled"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1   *string `json:"id_v1,omitempty"`
-	Motion *struct {
+	Motion struct {
 		// Motion Deprecated. Moved to motion_report/motion.
-		Motion       *bool `json:"motion,omitempty"`
+		Motion       bool `json:"motion"`
 		MotionReport *struct {
 			// Changed last time the value of this property is changed
 			Changed *string `json:"changed,omitempty"`
@@ -2147,9 +2276,9 @@ type MotionGet struct {
 		} `json:"motion_report,omitempty"`
 
 		// MotionValid Deprecated. Motion is valid when motion_report property is present, invalid when absent.
-		MotionValid *bool `json:"motion_valid,omitempty"`
-	} `json:"motion,omitempty"`
-	Owner       *ResourceIdentifier `json:"owner,omitempty"`
+		MotionValid bool `json:"motion_valid"`
+	} `json:"motion"`
+	Owner       ResourceIdentifier `json:"owner"`
 	Sensitivity *struct {
 		// Sensitivity Sensitivity of the sensor. Value in the range 0 to sensitivity_max
 		Sensitivity *int `json:"sensitivity,omitempty"`
@@ -2160,7 +2289,7 @@ type MotionGet struct {
 	} `json:"sensitivity,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // MotionGetSensitivityStatus defines model for MotionGet.Sensitivity.Status.
@@ -2182,7 +2311,7 @@ type MotionPut struct {
 // On defines model for On.
 type On struct {
 	// On On/Off state of the light on=true, off=false
-	On *bool `json:"on,omitempty"`
+	On bool `json:"on"`
 }
 
 // Powerup Feature containing properties to configure powerup behaviour of a lightsource.
@@ -2248,31 +2377,31 @@ type ProductArchetype string
 // ProductData defines model for ProductData.
 type ProductData struct {
 	// Certified This device is Hue certified
-	Certified *bool `json:"certified,omitempty"`
+	Certified bool `json:"certified"`
 
 	// HardwarePlatformType Hardware type; identified by Manufacturer code and ImageType
 	HardwarePlatformType *string `json:"hardware_platform_type,omitempty"`
 
 	// ManufacturerName Name of device manufacturer
-	ManufacturerName *string `json:"manufacturer_name,omitempty"`
+	ManufacturerName string `json:"manufacturer_name"`
 
 	// ModelId Unique identification of device model
-	ModelId *string `json:"model_id,omitempty"`
+	ModelId string `json:"model_id"`
 
 	// ProductArchetype The default archetype given by manufacturer. Can be changed by user.
-	ProductArchetype *ProductArchetype `json:"product_archetype,omitempty"`
+	ProductArchetype ProductArchetype `json:"product_archetype"`
 
 	// ProductName Name of the product
-	ProductName *string `json:"product_name,omitempty"`
+	ProductName string `json:"product_name"`
 
 	// SoftwareVersion Software version of the product
-	SoftwareVersion *string `json:"software_version,omitempty"`
+	SoftwareVersion string `json:"software_version"`
 }
 
 // RelativeRotaryGet defines model for RelativeRotaryGet.
 type RelativeRotaryGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1     *string `json:"id_v1,omitempty"`
@@ -2280,7 +2409,7 @@ type RelativeRotaryGet struct {
 		// ControlId Control identifier of the switch, unique within the device.
 		ControlId *int `json:"control_id,omitempty"`
 	} `json:"metadata,omitempty"`
-	Owner          *ResourceIdentifier `json:"owner,omitempty"`
+	Owner          ResourceIdentifier `json:"owner"`
 	RelativeRotary *struct {
 		// LastEvent Deprecated. Use rotary_report instead.
 		LastEvent *struct {
@@ -2311,7 +2440,7 @@ type RelativeRotaryGet struct {
 	} `json:"relative_rotary,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // RelativeRotaryGetRelativeRotaryLastEventAction defines model for RelativeRotaryGet.RelativeRotary.LastEvent.Action.
@@ -2335,26 +2464,26 @@ type RelativeRotaryPut struct {
 // Resource Common resource properties
 type Resource struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // ResourceGet defines model for ResourceGet.
 type ResourceGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *ResourceGetType `json:"type,omitempty"`
+	Type ResourceGetType `json:"type"`
 }
 
 // ResourceGetType Type of the supported resources
@@ -2363,10 +2492,10 @@ type ResourceGetType string
 // ResourceIdentifier defines model for ResourceIdentifier.
 type ResourceIdentifier struct {
 	// Rid The unique id of the referenced resource
-	Rid *string `json:"rid,omitempty"`
+	Rid string `json:"rid"`
 
 	// Rtype The type of the referenced resource
-	Rtype *ResourceIdentifierRtype `json:"rtype,omitempty"`
+	Rtype ResourceIdentifierRtype `json:"rtype"`
 }
 
 // ResourceIdentifierRtype The type of the referenced resource
@@ -2375,14 +2504,14 @@ type ResourceIdentifierRtype string
 // ResourceOwned defines model for ResourceOwned.
 type ResourceOwned struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // RoomArchetype Possible archetypes of a room
@@ -2391,22 +2520,22 @@ type RoomArchetype string
 // RoomGet defines model for RoomGet.
 type RoomGet struct {
 	// Children Child devices/services to group by the derived group
-	Children *[]ResourceIdentifier `json:"children,omitempty"`
+	Children []ResourceIdentifier `json:"children"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
 	// Metadata configuration object for a room
-	Metadata *struct {
+	Metadata struct {
 		// Archetype Possible archetypes of a room
-		Archetype *RoomArchetype `json:"archetype,omitempty"`
+		Archetype RoomArchetype `json:"archetype"`
 
 		// Name Human readable name of a resource
-		Name *string `json:"name,omitempty"`
-	} `json:"metadata,omitempty"`
+		Name string `json:"name"`
+	} `json:"metadata"`
 
 	// Services References all services aggregating control and state of children in the group.
 	// This includes all services grouped in the group hierarchy given by child relation.
@@ -2414,10 +2543,10 @@ type RoomGet struct {
 	// Aggregation is per service type, ie every service type which can be grouped has a corresponding definition of
 	// grouped type.
 	// Supported types: – grouped_light
-	Services *[]ResourceIdentifier `json:"services,omitempty"`
+	Services []ResourceIdentifier `json:"services"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // RoomPut defines model for RoomPut.
@@ -2441,29 +2570,29 @@ type RoomPut struct {
 // SceneGet defines model for SceneGet.
 type SceneGet struct {
 	// Actions List of actions to be executed synchronously on recall
-	Actions *[]ActionGet `json:"actions,omitempty"`
+	Actions []ActionGet `json:"actions"`
 
 	// AutoDynamic Indicates whether to automatically start the scene dynamically on active recall
-	AutoDynamic *bool               `json:"auto_dynamic,omitempty"`
-	Group       *ResourceIdentifier `json:"group,omitempty"`
+	AutoDynamic bool               `json:"auto_dynamic"`
+	Group       ResourceIdentifier `json:"group"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1     *string             `json:"id_v1,omitempty"`
-	Metadata *SceneMetadata      `json:"metadata,omitempty"`
-	Owner    *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1     *string            `json:"id_v1,omitempty"`
+	Metadata SceneMetadata      `json:"metadata"`
+	Owner    ResourceIdentifier `json:"owner"`
 
 	// Palette Group of colors that describe the palette of colors to be used when playing dynamics
 	Palette *ScenePalette `json:"palette,omitempty"`
 
 	// Speed Speed of dynamic palette for this scene
-	Speed  *float32 `json:"speed,omitempty"`
-	Status *struct {
+	Speed  float32 `json:"speed"`
+	Status struct {
 		Active *SceneGetStatusActive `json:"active,omitempty"`
-	} `json:"status,omitempty"`
-	Type *SceneGetType `json:"type,omitempty"`
+	} `json:"status"`
+	Type SceneGetType `json:"type"`
 }
 
 // SceneGetStatusActive defines model for SceneGet.Status.Active.
@@ -2553,7 +2682,7 @@ type SecurityAreaMotionGet struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1   *string `json:"id_v1,omitempty"`
@@ -2561,10 +2690,10 @@ type SecurityAreaMotionGet struct {
 		// Motion True if motion is detected.
 		Motion *bool `json:"motion,omitempty"`
 	} `json:"motion,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // SecurityAreaMotionPut defines model for SecurityAreaMotionPut.
@@ -2579,7 +2708,7 @@ type SecurityAreaMotionPut struct {
 // ServiceGroupGet defines model for ServiceGroupGet.
 type ServiceGroupGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
@@ -2588,7 +2717,7 @@ type ServiceGroupGet struct {
 	Services *[]ResourceIdentifier `json:"services,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // ServiceGroupPut defines model for ServiceGroupPut.
@@ -2633,7 +2762,7 @@ type SmartSceneGet struct {
 	Group ResourceIdentifier `json:"group"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1     *string                     `json:"id_v1,omitempty"`
@@ -2643,8 +2772,8 @@ type SmartSceneGet struct {
 	State SmartSceneGetState `json:"state"`
 
 	// TransitionDuration duration of the transition from on one timeslot's scene to the other (defaults to 60000ms)
-	TransitionDuration int                `json:"transition_duration"`
-	Type               *SmartSceneGetType `json:"type,omitempty"`
+	TransitionDuration int               `json:"transition_duration"`
+	Type               SmartSceneGetType `json:"type"`
 
 	// WeekTimeslots information on what is the light state for every timeslot of the day
 	WeekTimeslots []DayTimeslotsGet `json:"week_timeslots"`
@@ -2750,14 +2879,14 @@ type SpeakerGet struct {
 	Alerts *[]SpeakerGetAlerts `json:"alerts,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // SpeakerGetAlerts defines model for SpeakerGet.Alerts.
@@ -2787,11 +2916,11 @@ type SupportedTimedEffects string
 // TamperGet defines model for TamperGet.
 type TamperGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1          *string             `json:"id_v1,omitempty"`
-	Owner         *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1          *string            `json:"id_v1,omitempty"`
+	Owner         ResourceIdentifier `json:"owner"`
 	TamperReports *[]struct {
 		// Changed Last time the value of this property was changed.
 		Changed *time.Time `json:"changed,omitempty"`
@@ -2804,7 +2933,7 @@ type TamperGet struct {
 	} `json:"tamper_reports,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // TamperGetTamperReportsState State of the tamper sensor.
@@ -2819,17 +2948,17 @@ type TamperPut struct {
 // TemperatureGet defines model for TemperatureGet.
 type TemperatureGet struct {
 	// Enabled `true` when sensor is activated, `false` when deactivated
-	Enabled *bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1        *string             `json:"id_v1,omitempty"`
-	Owner       *ResourceIdentifier `json:"owner,omitempty"`
-	Temperature *struct {
+	IdV1        *string            `json:"id_v1,omitempty"`
+	Owner       ResourceIdentifier `json:"owner"`
+	Temperature struct {
 		// Temperature Deprecated. Moved to Temperature_report/temperature
-		Temperature       *float32 `json:"temperature,omitempty"`
+		Temperature       float32 `json:"temperature"`
 		TemperatureReport *struct {
 			// Changed last time the value of this property is changed.
 			Changed *time.Time `json:"changed,omitempty"`
@@ -2839,11 +2968,11 @@ type TemperatureGet struct {
 		} `json:"temperature_report,omitempty"`
 
 		// TemperatureValid Deprecated. Indication whether the value presented in temperature is valid
-		TemperatureValid *bool `json:"temperature_valid,omitempty"`
-	} `json:"temperature,omitempty"`
+		TemperatureValid bool `json:"temperature_valid"`
+	} `json:"temperature"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // TemperaturePut defines model for TemperaturePut.
@@ -2864,14 +2993,14 @@ type Weekday string
 // WifiConnectivityGet defines model for WifiConnectivityGet.
 type WifiConnectivityGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
 	// MacAddress MAC address of the device.
-	MacAddress     *string             `json:"mac_address,omitempty"`
-	Owner          *ResourceIdentifier `json:"owner,omitempty"`
+	MacAddress     *string            `json:"mac_address,omitempty"`
+	Owner          ResourceIdentifier `json:"owner"`
 	SignalStrength *struct {
 		Status *WifiConnectivityGetSignalStrengthStatus `json:"status,omitempty"`
 
@@ -2883,7 +3012,7 @@ type WifiConnectivityGet struct {
 	Status *WifiConnectivityGetStatus `json:"status,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // WifiConnectivityGetSignalStrengthStatus defines model for WifiConnectivityGet.SignalStrength.Status.
@@ -2901,11 +3030,11 @@ type WifiConnectivityPut struct {
 // ZgpConnectivityGet defines model for ZgpConnectivityGet.
 type ZgpConnectivityGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// SourceId Source ID of the ZGP device.
 	SourceId *string `json:"source_id,omitempty"`
@@ -2914,7 +3043,7 @@ type ZgpConnectivityGet struct {
 	Status *ZgpConnectivityGetStatus `json:"status,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // ZgpConnectivityGetStatus Current connectivity status of the device.
@@ -2939,20 +3068,20 @@ type ZigbeeConnectivityGet struct {
 	ExtendedPanId *string `json:"extended_pan_id,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
 	IdV1 *string `json:"id_v1,omitempty"`
 
 	// MacAddress MAC address of the device.
-	MacAddress *string             `json:"mac_address,omitempty"`
-	Owner      *ResourceIdentifier `json:"owner,omitempty"`
+	MacAddress *string            `json:"mac_address,omitempty"`
+	Owner      ResourceIdentifier `json:"owner"`
 
 	// Status Current connectivity status of the device.
 	Status *ZigbeeConnectivityGetStatus `json:"status,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // ZigbeeConnectivityGetChannelStatus defines model for ZigbeeConnectivityGet.Channel.Status.
@@ -2981,17 +3110,17 @@ type ZigbeeConnectivityPutChannelValue string
 // ZigbeeDeviceDiscoveryGet defines model for ZigbeeDeviceDiscoveryGet.
 type ZigbeeDeviceDiscoveryGet struct {
 	// Id Unique identifier representing a specific resource instance
-	Id *string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1  *string             `json:"id_v1,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1  *string            `json:"id_v1,omitempty"`
+	Owner ResourceIdentifier `json:"owner"`
 
 	// Status Current status of the device discovery.
 	Status *ZigbeeDeviceDiscoveryGetStatus `json:"status,omitempty"`
 
 	// Type Type of the supported resources
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // ZigbeeDeviceDiscoveryGetStatus Current status of the device discovery.
@@ -3058,6 +3187,19 @@ type Unauthorized = ErrorResponse
 type AuthenticateJSONBody struct {
 	Devicetype        *string `json:"devicetype,omitempty"`
 	Generateclientkey *bool   `json:"generateclientkey,omitempty"`
+}
+
+// GetEventStreamParams defines parameters for GetEventStream.
+type GetEventStreamParams struct {
+	// IfNoneMatch Unix timestamp of the last seen event, followed by `:0`.
+	//
+	// If any events in the server's buffer have a timestamp greater than this,
+	// the server will send them immediately instead of blocking for new events.
+	// The server does not maintain a persistent buffer and purges old events
+	// after several minutes and does not indicate when the value of
+	// If-None-Match falls outside of its buffered window, so clients must poll
+	// consistently often else events will be silently missed.
+	IfNoneMatch *string `json:"If-None-Match,omitempty"`
 }
 
 // AuthenticateJSONRequestBody defines body for Authenticate for application/json ContentType.
@@ -3191,6 +3333,100 @@ type CreateZoneJSONRequestBody = RoomPut
 
 // UpdateZoneJSONRequestBody defines body for UpdateZone for application/json ContentType.
 type UpdateZoneJSONRequestBody = RoomPut
+
+// Getter for additional properties for Event_Data_Item. Returns the specified
+// element and whether it was found
+func (a Event_Data_Item) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for Event_Data_Item
+func (a *Event_Data_Item) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for Event_Data_Item to handle AdditionalProperties
+func (a *Event_Data_Item) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["id"]; found {
+		err = json.Unmarshal(raw, &a.Id)
+		if err != nil {
+			return fmt.Errorf("error reading 'id': %w", err)
+		}
+		delete(object, "id")
+	}
+
+	if raw, found := object["id_v1"]; found {
+		err = json.Unmarshal(raw, &a.IdV1)
+		if err != nil {
+			return fmt.Errorf("error reading 'id_v1': %w", err)
+		}
+		delete(object, "id_v1")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for Event_Data_Item to handle AdditionalProperties
+func (a Event_Data_Item) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["id"], err = json.Marshal(a.Id)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'id': %w", err)
+	}
+
+	if a.IdV1 != nil {
+		object["id_v1"], err = json.Marshal(a.IdV1)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'id_v1': %w", err)
+		}
+	}
+
+	object["type"], err = json.Marshal(a.Type)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'type': %w", err)
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -3748,6 +3984,9 @@ type ClientInterface interface {
 	UpdateZoneWithBody(ctx context.Context, zoneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateZone(ctx context.Context, zoneId string, body UpdateZoneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEventStream request
+	GetEventStream(ctx context.Context, params *GetEventStreamParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) AuthenticateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5852,6 +6091,18 @@ func (c *Client) UpdateZoneWithBody(ctx context.Context, zoneId string, contentT
 
 func (c *Client) UpdateZone(ctx context.Context, zoneId string, body UpdateZoneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateZoneRequest(c.Server, zoneId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEventStream(ctx context.Context, params *GetEventStreamParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEventStreamRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -10593,6 +10844,48 @@ func NewUpdateZoneRequestWithBody(server string, zoneId string, contentType stri
 	return req, nil
 }
 
+// NewGetEventStreamRequest generates requests for GetEventStream
+func NewGetEventStreamRequest(server string, params *GetEventStreamParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/eventstream/clip/v2")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.IfNoneMatch != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithLocation("simple", false, "If-None-Match", runtime.ParamLocationHeader, *params.IfNoneMatch)
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("If-None-Match", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -11119,6 +11412,9 @@ type ClientWithResponsesInterface interface {
 	UpdateZoneWithBodyWithResponse(ctx context.Context, zoneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateZoneResponse, error)
 
 	UpdateZoneWithResponse(ctx context.Context, zoneId string, body UpdateZoneJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateZoneResponse, error)
+
+	// GetEventStreamWithResponse request
+	GetEventStreamWithResponse(ctx context.Context, params *GetEventStreamParams, reqEditors ...RequestEditorFn) (*GetEventStreamResponse, error)
 }
 
 type AuthenticateResponse struct {
@@ -11183,8 +11479,8 @@ type GetBehaviorInstancesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BehaviorInstanceGet `json:"data,omitempty"`
-		Errors *[]Error               `json:"errors,omitempty"`
+		Data   []BehaviorInstanceGet `json:"data"`
+		Errors []Error               `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11218,8 +11514,8 @@ type GetBehaviorInstanceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BehaviorInstanceGet `json:"data,omitempty"`
-		Errors *[]Error               `json:"errors,omitempty"`
+		Data   []BehaviorInstanceGet `json:"data"`
+		Errors []Error               `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11253,8 +11549,8 @@ type UpdateBehaviorInstanceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11288,8 +11584,8 @@ type GetBehaviorScriptsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BehaviorScriptGet `json:"data,omitempty"`
-		Errors *[]Error             `json:"errors,omitempty"`
+		Data   []BehaviorScriptGet `json:"data"`
+		Errors []Error             `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11323,8 +11619,8 @@ type GetBehaviorScriptResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BehaviorScriptGet `json:"data,omitempty"`
-		Errors *[]Error             `json:"errors,omitempty"`
+		Data   []BehaviorScriptGet `json:"data"`
+		Errors []Error             `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11358,8 +11654,8 @@ type UpdateBehaviorScriptResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11393,8 +11689,8 @@ type GetBellButtonsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BellButtonGet `json:"data,omitempty"`
-		Errors *[]Error         `json:"errors,omitempty"`
+		Data   []BellButtonGet `json:"data"`
+		Errors []Error         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11428,8 +11724,8 @@ type GetBellButtonResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BellButtonGet `json:"data,omitempty"`
-		Errors *[]Error         `json:"errors,omitempty"`
+		Data   []BellButtonGet `json:"data"`
+		Errors []Error         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11463,8 +11759,8 @@ type UpdateBellButtonResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11498,8 +11794,8 @@ type GetBridgesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BridgeGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []BridgeGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11533,8 +11829,8 @@ type GetBridgeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BridgeGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []BridgeGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11568,8 +11864,8 @@ type UpdateBridgeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11603,8 +11899,8 @@ type GetBridgeHomesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BridgeHomeGet `json:"data,omitempty"`
-		Errors *[]Error         `json:"errors,omitempty"`
+		Data   []BridgeHomeGet `json:"data"`
+		Errors []Error         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11638,8 +11934,8 @@ type GetBridgeHomeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]BridgeHomeGet `json:"data,omitempty"`
-		Errors *[]Error         `json:"errors,omitempty"`
+		Data   []BridgeHomeGet `json:"data"`
+		Errors []Error         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11673,8 +11969,8 @@ type GetButtonsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ButtonGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []ButtonGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11708,8 +12004,8 @@ type GetButtonResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ButtonGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []ButtonGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11743,8 +12039,8 @@ type UpdateButtonResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11778,8 +12074,8 @@ type GetCameraMotionsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]CameraMotionGet `json:"data,omitempty"`
-		Errors *[]Error           `json:"errors,omitempty"`
+		Data   []CameraMotionGet `json:"data"`
+		Errors []Error           `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11813,8 +12109,8 @@ type GetCameraMotionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]CameraMotionGet `json:"data,omitempty"`
-		Errors *[]Error           `json:"errors,omitempty"`
+		Data   []CameraMotionGet `json:"data"`
+		Errors []Error           `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11848,8 +12144,8 @@ type UpdateCameraMotionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11883,8 +12179,8 @@ type GetContactsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ContactGet `json:"data,omitempty"`
-		Errors *[]Error      `json:"errors,omitempty"`
+		Data   []ContactGet `json:"data"`
+		Errors []Error      `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11918,8 +12214,8 @@ type GetContactResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ContactGet `json:"data,omitempty"`
-		Errors *[]Error      `json:"errors,omitempty"`
+		Data   []ContactGet `json:"data"`
+		Errors []Error      `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11953,8 +12249,8 @@ type UpdateContactResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -11988,8 +12284,8 @@ type GetConvenienceAreaMotionsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ConvenienceAreaMotionGet `json:"data,omitempty"`
-		Errors *[]Error                    `json:"errors,omitempty"`
+		Data   []ConvenienceAreaMotionGet `json:"data"`
+		Errors []Error                    `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12023,8 +12319,8 @@ type GetConvenienceAreaMotionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ConvenienceAreaMotionGet `json:"data,omitempty"`
-		Errors *[]Error                    `json:"errors,omitempty"`
+		Data   []ConvenienceAreaMotionGet `json:"data"`
+		Errors []Error                    `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12058,8 +12354,8 @@ type UpdateConvenienceAreaMotionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12093,8 +12389,8 @@ type GetDevicesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]DeviceGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []DeviceGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12128,8 +12424,8 @@ type DeleteDeviceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12163,8 +12459,8 @@ type GetDeviceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]DeviceGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []DeviceGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12198,8 +12494,8 @@ type UpdateDeviceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12233,8 +12529,8 @@ type GetDevicePowersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]DevicePowerGet `json:"data,omitempty"`
-		Errors *[]Error          `json:"errors,omitempty"`
+		Data   []DevicePowerGet `json:"data"`
+		Errors []Error          `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12268,8 +12564,8 @@ type GetDevicePowerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]DevicePowerGet `json:"data,omitempty"`
-		Errors *[]Error          `json:"errors,omitempty"`
+		Data   []DevicePowerGet `json:"data"`
+		Errors []Error          `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12303,8 +12599,8 @@ type GetDeviceSoftwareUpdatesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]DeviceSoftwareUpdateGet `json:"data,omitempty"`
-		Errors *[]Error                   `json:"errors,omitempty"`
+		Data   []DeviceSoftwareUpdateGet `json:"data"`
+		Errors []Error                   `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12338,8 +12634,8 @@ type GetDeviceSoftwareUpdateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]DeviceSoftwareUpdateGet `json:"data,omitempty"`
-		Errors *[]Error                   `json:"errors,omitempty"`
+		Data   []DeviceSoftwareUpdateGet `json:"data"`
+		Errors []Error                   `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12373,8 +12669,8 @@ type UpdateDeviceSoftwareUpdateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12408,8 +12704,8 @@ type GetEntertainmentsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]EntertainmentGet `json:"data,omitempty"`
-		Errors *[]Error            `json:"errors,omitempty"`
+		Data   []EntertainmentGet `json:"data"`
+		Errors []Error            `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12443,8 +12739,8 @@ type GetEntertainmentResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]EntertainmentGet `json:"data,omitempty"`
-		Errors *[]Error            `json:"errors,omitempty"`
+		Data   []EntertainmentGet `json:"data"`
+		Errors []Error            `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12478,8 +12774,8 @@ type UpdateEntertainmentResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12513,8 +12809,8 @@ type GetEntertainmentConfigurationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]EntertainmentConfigurationGet `json:"data,omitempty"`
-		Errors *[]Error                         `json:"errors,omitempty"`
+		Data   []EntertainmentConfigurationGet `json:"data"`
+		Errors []Error                         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12548,8 +12844,8 @@ type GetEntertainmentConfigurationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]EntertainmentConfigurationGet `json:"data,omitempty"`
-		Errors *[]Error                         `json:"errors,omitempty"`
+		Data   []EntertainmentConfigurationGet `json:"data"`
+		Errors []Error                         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12583,8 +12879,8 @@ type UpdateEntertainmentConfigurationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12618,8 +12914,8 @@ type GetGeofenceClientsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GeofenceClientGet `json:"data,omitempty"`
-		Errors *[]Error             `json:"errors,omitempty"`
+		Data   []GeofenceClientGet `json:"data"`
+		Errors []Error             `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12653,8 +12949,8 @@ type GetGeofenceClientResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GeofenceClientGet `json:"data,omitempty"`
-		Errors *[]Error             `json:"errors,omitempty"`
+		Data   []GeofenceClientGet `json:"data"`
+		Errors []Error             `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12688,8 +12984,8 @@ type UpdateGeofenceClientResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12723,8 +13019,8 @@ type GetGeolocationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GeolocationGet `json:"data,omitempty"`
-		Errors *[]Error          `json:"errors,omitempty"`
+		Data   []GeolocationGet `json:"data"`
+		Errors []Error          `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12758,8 +13054,8 @@ type GetGeolocationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GeolocationGet `json:"data,omitempty"`
-		Errors *[]Error          `json:"errors,omitempty"`
+		Data   []GeolocationGet `json:"data"`
+		Errors []Error          `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12793,8 +13089,8 @@ type UpdateGeolocationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12828,8 +13124,8 @@ type GetGroupedLightsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GroupedLightGet `json:"data,omitempty"`
-		Errors *[]Error           `json:"errors,omitempty"`
+		Data   []GroupedLightGet `json:"data"`
+		Errors []Error           `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12863,8 +13159,8 @@ type GetGroupedLightResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GroupedLightGet `json:"data,omitempty"`
-		Errors *[]Error           `json:"errors,omitempty"`
+		Data   []GroupedLightGet `json:"data"`
+		Errors []Error           `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12898,8 +13194,8 @@ type UpdateGroupedLightResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12933,8 +13229,8 @@ type GetGroupedLightLevelsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GroupedLightLevelGet `json:"data,omitempty"`
-		Errors *[]Error                `json:"errors,omitempty"`
+		Data   []GroupedLightLevelGet `json:"data"`
+		Errors []Error                `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -12968,8 +13264,8 @@ type GetGroupedLightLevelResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GroupedLightLevelGet `json:"data,omitempty"`
-		Errors *[]Error                `json:"errors,omitempty"`
+		Data   []GroupedLightLevelGet `json:"data"`
+		Errors []Error                `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13003,8 +13299,8 @@ type UpdateGroupedLightLevelResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13038,8 +13334,8 @@ type GetGroupedMotionsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GroupedMotionGet `json:"data,omitempty"`
-		Errors *[]Error            `json:"errors,omitempty"`
+		Data   []GroupedMotionGet `json:"data"`
+		Errors []Error            `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13073,8 +13369,8 @@ type GetGroupedMotionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]GroupedMotionGet `json:"data,omitempty"`
-		Errors *[]Error            `json:"errors,omitempty"`
+		Data   []GroupedMotionGet `json:"data"`
+		Errors []Error            `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13108,8 +13404,8 @@ type UpdateGroupedMotionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13143,8 +13439,8 @@ type GetHomekitsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]HomekitGet `json:"data,omitempty"`
-		Errors *[]Error      `json:"errors,omitempty"`
+		Data   []HomekitGet `json:"data"`
+		Errors []Error      `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13178,8 +13474,8 @@ type GetHomekitResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]HomekitGet `json:"data,omitempty"`
-		Errors *[]Error      `json:"errors,omitempty"`
+		Data   []HomekitGet `json:"data"`
+		Errors []Error      `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13213,8 +13509,8 @@ type UpdateHomekitResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13248,8 +13544,8 @@ type GetLightsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]LightGet `json:"data,omitempty"`
-		Errors *[]Error    `json:"errors,omitempty"`
+		Data   []LightGet `json:"data"`
+		Errors []Error    `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13283,8 +13579,8 @@ type GetLightResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]LightGet `json:"data,omitempty"`
-		Errors *[]Error    `json:"errors,omitempty"`
+		Data   []LightGet `json:"data"`
+		Errors []Error    `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13318,8 +13614,8 @@ type UpdateLightResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13353,8 +13649,8 @@ type GetLightLevelsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]LightLevelGet `json:"data,omitempty"`
-		Errors *[]Error         `json:"errors,omitempty"`
+		Data   []LightLevelGet `json:"data"`
+		Errors []Error         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13388,8 +13684,8 @@ type GetLightLevelResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]LightLevelGet `json:"data,omitempty"`
-		Errors *[]Error         `json:"errors,omitempty"`
+		Data   []LightLevelGet `json:"data"`
+		Errors []Error         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13423,8 +13719,8 @@ type UpdateLightLevelResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13458,8 +13754,8 @@ type GetMattersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MatterGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []MatterGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13493,8 +13789,8 @@ type GetMatterResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MatterGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []MatterGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13528,8 +13824,8 @@ type UpdateMatterResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13563,8 +13859,8 @@ type GetMatterFabricsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MatterFabricGet `json:"data,omitempty"`
-		Errors *[]Error           `json:"errors,omitempty"`
+		Data   []MatterFabricGet `json:"data"`
+		Errors []Error           `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13598,8 +13894,8 @@ type GetMatterFabricResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MatterFabricGet `json:"data,omitempty"`
-		Errors *[]Error           `json:"errors,omitempty"`
+		Data   []MatterFabricGet `json:"data"`
+		Errors []Error           `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13633,8 +13929,8 @@ type UpdateMatterFabricResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13668,8 +13964,8 @@ type GetMotionSensorsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MotionGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []MotionGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13703,8 +13999,8 @@ type GetMotionSensorResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MotionGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []MotionGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13738,8 +14034,8 @@ type UpdateMotionSensorResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13773,8 +14069,8 @@ type GetMotionAreaCandidatesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MotionAreaCandidateGet `json:"data,omitempty"`
-		Errors *[]Error                  `json:"errors,omitempty"`
+		Data   []MotionAreaCandidateGet `json:"data"`
+		Errors []Error                  `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13808,8 +14104,8 @@ type GetMotionAreaCandidateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MotionAreaCandidateGet `json:"data,omitempty"`
-		Errors *[]Error                  `json:"errors,omitempty"`
+		Data   []MotionAreaCandidateGet `json:"data"`
+		Errors []Error                  `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13843,8 +14139,8 @@ type UpdateMotionAreaCandidateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13878,8 +14174,8 @@ type GetMotionAreaConfigurationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MotionAreaConfigurationGet `json:"data,omitempty"`
-		Errors *[]Error                      `json:"errors,omitempty"`
+		Data   []MotionAreaConfigurationGet `json:"data"`
+		Errors []Error                      `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13913,8 +14209,8 @@ type GetMotionAreaConfigurationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]MotionAreaConfigurationGet `json:"data,omitempty"`
-		Errors *[]Error                      `json:"errors,omitempty"`
+		Data   []MotionAreaConfigurationGet `json:"data"`
+		Errors []Error                      `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13948,8 +14244,8 @@ type UpdateMotionAreaConfigurationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -13983,8 +14279,8 @@ type GetRelativeRotariesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]RelativeRotaryGet `json:"data,omitempty"`
-		Errors *[]Error             `json:"errors,omitempty"`
+		Data   []RelativeRotaryGet `json:"data"`
+		Errors []Error             `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14018,8 +14314,8 @@ type GetRelativeRotaryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]RelativeRotaryGet `json:"data,omitempty"`
-		Errors *[]Error             `json:"errors,omitempty"`
+		Data   []RelativeRotaryGet `json:"data"`
+		Errors []Error             `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14053,8 +14349,8 @@ type UpdateRelativeRotaryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14088,8 +14384,8 @@ type GetRoomsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]RoomGet `json:"data,omitempty"`
-		Errors *[]Error   `json:"errors,omitempty"`
+		Data   []RoomGet `json:"data"`
+		Errors []Error   `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14123,8 +14419,8 @@ type CreateRoomResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14158,8 +14454,8 @@ type DeleteRoomResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14193,8 +14489,8 @@ type GetRoomResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]RoomGet `json:"data,omitempty"`
-		Errors *[]Error   `json:"errors,omitempty"`
+		Data   []RoomGet `json:"data"`
+		Errors []Error   `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14228,8 +14524,8 @@ type UpdateRoomResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14263,8 +14559,8 @@ type GetScenesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]SceneGet `json:"data,omitempty"`
-		Errors *[]Error    `json:"errors,omitempty"`
+		Data   []SceneGet `json:"data"`
+		Errors []Error    `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14298,8 +14594,8 @@ type CreateSceneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14333,8 +14629,8 @@ type DeleteSceneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14368,8 +14664,8 @@ type GetSceneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]SceneGet `json:"data,omitempty"`
-		Errors *[]Error    `json:"errors,omitempty"`
+		Data   []SceneGet `json:"data"`
+		Errors []Error    `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14403,8 +14699,8 @@ type UpdateSceneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14438,8 +14734,8 @@ type GetSecurityAreaMotionsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]SecurityAreaMotionGet `json:"data,omitempty"`
-		Errors *[]Error                 `json:"errors,omitempty"`
+		Data   []SecurityAreaMotionGet `json:"data"`
+		Errors []Error                 `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14473,8 +14769,8 @@ type GetSecurityAreaMotionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]SecurityAreaMotionGet `json:"data,omitempty"`
-		Errors *[]Error                 `json:"errors,omitempty"`
+		Data   []SecurityAreaMotionGet `json:"data"`
+		Errors []Error                 `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14508,8 +14804,8 @@ type UpdateSecurityAreaMotionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14543,8 +14839,8 @@ type GetServiceGroupsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ServiceGroupGet `json:"data,omitempty"`
-		Errors *[]Error           `json:"errors,omitempty"`
+		Data   []ServiceGroupGet `json:"data"`
+		Errors []Error           `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14578,8 +14874,8 @@ type GetServiceGroupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ServiceGroupGet `json:"data,omitempty"`
-		Errors *[]Error           `json:"errors,omitempty"`
+		Data   []ServiceGroupGet `json:"data"`
+		Errors []Error           `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14613,8 +14909,8 @@ type UpdateServiceGroupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14648,8 +14944,8 @@ type GetSmartScenesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]SmartSceneGet `json:"data,omitempty"`
-		Errors *[]Error         `json:"errors,omitempty"`
+		Data   []SmartSceneGet `json:"data"`
+		Errors []Error         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14683,8 +14979,8 @@ type CreateSmartSceneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14718,8 +15014,8 @@ type DeleteSmartSceneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14753,8 +15049,8 @@ type GetSmartSceneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]SmartSceneGet `json:"data,omitempty"`
-		Errors *[]Error         `json:"errors,omitempty"`
+		Data   []SmartSceneGet `json:"data"`
+		Errors []Error         `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14788,8 +15084,8 @@ type UpdateSmartSceneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14823,8 +15119,8 @@ type GetSpeakersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]SpeakerGet `json:"data,omitempty"`
-		Errors *[]Error      `json:"errors,omitempty"`
+		Data   []SpeakerGet `json:"data"`
+		Errors []Error      `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14858,8 +15154,8 @@ type GetSpeakerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]SpeakerGet `json:"data,omitempty"`
-		Errors *[]Error      `json:"errors,omitempty"`
+		Data   []SpeakerGet `json:"data"`
+		Errors []Error      `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14893,8 +15189,8 @@ type UpdateSpeakerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14928,8 +15224,8 @@ type GetTampersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]TamperGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []TamperGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14963,8 +15259,8 @@ type GetTamperResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]TamperGet `json:"data,omitempty"`
-		Errors *[]Error     `json:"errors,omitempty"`
+		Data   []TamperGet `json:"data"`
+		Errors []Error     `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -14998,8 +15294,8 @@ type UpdateTamperResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15033,8 +15329,8 @@ type GetTemperaturesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]TemperatureGet `json:"data,omitempty"`
-		Errors *[]Error          `json:"errors,omitempty"`
+		Data   []TemperatureGet `json:"data"`
+		Errors []Error          `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15068,8 +15364,8 @@ type GetTemperatureResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]TemperatureGet `json:"data,omitempty"`
-		Errors *[]Error          `json:"errors,omitempty"`
+		Data   []TemperatureGet `json:"data"`
+		Errors []Error          `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15103,8 +15399,8 @@ type UpdateTemperatureResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15138,8 +15434,8 @@ type GetWifiConnectivitiesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]WifiConnectivityGet `json:"data,omitempty"`
-		Errors *[]Error               `json:"errors,omitempty"`
+		Data   []WifiConnectivityGet `json:"data"`
+		Errors []Error               `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15173,8 +15469,8 @@ type GetWifiConnectivityResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]WifiConnectivityGet `json:"data,omitempty"`
-		Errors *[]Error               `json:"errors,omitempty"`
+		Data   []WifiConnectivityGet `json:"data"`
+		Errors []Error               `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15208,8 +15504,8 @@ type UpdateWifiConnectivityResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15243,8 +15539,8 @@ type GetZgpConnectivitiesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ZgpConnectivityGet `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ZgpConnectivityGet `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15278,8 +15574,8 @@ type GetZgpConnectivityResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ZgpConnectivityGet `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ZgpConnectivityGet `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15313,8 +15609,8 @@ type UpdateZgpConnectivityResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15348,8 +15644,8 @@ type GetZigbeeConnectivitiesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ZigbeeConnectivityGet `json:"data,omitempty"`
-		Errors *[]Error                 `json:"errors,omitempty"`
+		Data   []ZigbeeConnectivityGet `json:"data"`
+		Errors []Error                 `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15383,8 +15679,8 @@ type GetZigbeeConnectivityResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ZigbeeConnectivityGet `json:"data,omitempty"`
-		Errors *[]Error                 `json:"errors,omitempty"`
+		Data   []ZigbeeConnectivityGet `json:"data"`
+		Errors []Error                 `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15418,8 +15714,8 @@ type UpdateZigbeeConnectivityResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15453,8 +15749,8 @@ type GetZigbeeDeviceDiscoveriesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ZigbeeDeviceDiscoveryGet `json:"data,omitempty"`
-		Errors *[]Error                    `json:"errors,omitempty"`
+		Data   []ZigbeeDeviceDiscoveryGet `json:"data"`
+		Errors []Error                    `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15488,8 +15784,8 @@ type GetZigbeeDeviceDiscoveryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ZigbeeDeviceDiscoveryGet `json:"data,omitempty"`
-		Errors *[]Error                    `json:"errors,omitempty"`
+		Data   []ZigbeeDeviceDiscoveryGet `json:"data"`
+		Errors []Error                    `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15523,8 +15819,8 @@ type UpdateZigbeeDeviceDiscoveryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15558,8 +15854,8 @@ type GetZonesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]RoomGet `json:"data,omitempty"`
-		Errors *[]Error   `json:"errors,omitempty"`
+		Data   []RoomGet `json:"data"`
+		Errors []Error   `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15593,8 +15889,8 @@ type CreateZoneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15628,8 +15924,8 @@ type DeleteZoneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15663,8 +15959,8 @@ type GetZoneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]RoomGet `json:"data,omitempty"`
-		Errors *[]Error   `json:"errors,omitempty"`
+		Data   []RoomGet `json:"data"`
+		Errors []Error   `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15698,8 +15994,8 @@ type UpdateZoneResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Data   *[]ResourceIdentifier `json:"data,omitempty"`
-		Errors *[]Error              `json:"errors,omitempty"`
+		Data   []ResourceIdentifier `json:"data"`
+		Errors []Error              `json:"errors"`
 	}
 	JSON401 *Unauthorized
 	JSON403 *Forbidden
@@ -15723,6 +16019,38 @@ func (r UpdateZoneResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateZoneResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetEventStreamResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Event
+	JSON401      *Unauthorized
+	JSON403      *Forbidden
+	JSON404      *NotFound
+	JSON405      *MethodNotAllowed
+	JSON406      *NotAcceptable
+	JSON409      *Conflict
+	JSON429      *TooManyRequests
+	JSON500      *InternalServerError
+	JSON503      *ServiceUnavailable
+	JSON507      *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEventStreamResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEventStreamResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -17269,6 +17597,15 @@ func (c *ClientWithResponses) UpdateZoneWithResponse(ctx context.Context, zoneId
 	return ParseUpdateZoneResponse(rsp)
 }
 
+// GetEventStreamWithResponse request returning *GetEventStreamResponse
+func (c *ClientWithResponses) GetEventStreamWithResponse(ctx context.Context, params *GetEventStreamParams, reqEditors ...RequestEditorFn) (*GetEventStreamResponse, error) {
+	rsp, err := c.GetEventStream(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEventStreamResponse(rsp)
+}
+
 // ParseAuthenticateResponse parses an HTTP response from a AuthenticateWithResponse call
 func ParseAuthenticateResponse(rsp *http.Response) (*AuthenticateResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -17417,8 +17754,8 @@ func ParseGetBehaviorInstancesResponse(rsp *http.Response) (*GetBehaviorInstance
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BehaviorInstanceGet `json:"data,omitempty"`
-			Errors *[]Error               `json:"errors,omitempty"`
+			Data   []BehaviorInstanceGet `json:"data"`
+			Errors []Error               `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -17516,8 +17853,8 @@ func ParseGetBehaviorInstanceResponse(rsp *http.Response) (*GetBehaviorInstanceR
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BehaviorInstanceGet `json:"data,omitempty"`
-			Errors *[]Error               `json:"errors,omitempty"`
+			Data   []BehaviorInstanceGet `json:"data"`
+			Errors []Error               `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -17615,8 +17952,8 @@ func ParseUpdateBehaviorInstanceResponse(rsp *http.Response) (*UpdateBehaviorIns
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -17714,8 +18051,8 @@ func ParseGetBehaviorScriptsResponse(rsp *http.Response) (*GetBehaviorScriptsRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BehaviorScriptGet `json:"data,omitempty"`
-			Errors *[]Error             `json:"errors,omitempty"`
+			Data   []BehaviorScriptGet `json:"data"`
+			Errors []Error             `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -17813,8 +18150,8 @@ func ParseGetBehaviorScriptResponse(rsp *http.Response) (*GetBehaviorScriptRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BehaviorScriptGet `json:"data,omitempty"`
-			Errors *[]Error             `json:"errors,omitempty"`
+			Data   []BehaviorScriptGet `json:"data"`
+			Errors []Error             `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -17912,8 +18249,8 @@ func ParseUpdateBehaviorScriptResponse(rsp *http.Response) (*UpdateBehaviorScrip
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18011,8 +18348,8 @@ func ParseGetBellButtonsResponse(rsp *http.Response) (*GetBellButtonsResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BellButtonGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
+			Data   []BellButtonGet `json:"data"`
+			Errors []Error         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18110,8 +18447,8 @@ func ParseGetBellButtonResponse(rsp *http.Response) (*GetBellButtonResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BellButtonGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
+			Data   []BellButtonGet `json:"data"`
+			Errors []Error         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18209,8 +18546,8 @@ func ParseUpdateBellButtonResponse(rsp *http.Response) (*UpdateBellButtonRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18308,8 +18645,8 @@ func ParseGetBridgesResponse(rsp *http.Response) (*GetBridgesResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BridgeGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []BridgeGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18407,8 +18744,8 @@ func ParseGetBridgeResponse(rsp *http.Response) (*GetBridgeResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BridgeGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []BridgeGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18506,8 +18843,8 @@ func ParseUpdateBridgeResponse(rsp *http.Response) (*UpdateBridgeResponse, error
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18605,8 +18942,8 @@ func ParseGetBridgeHomesResponse(rsp *http.Response) (*GetBridgeHomesResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BridgeHomeGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
+			Data   []BridgeHomeGet `json:"data"`
+			Errors []Error         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18704,8 +19041,8 @@ func ParseGetBridgeHomeResponse(rsp *http.Response) (*GetBridgeHomeResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]BridgeHomeGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
+			Data   []BridgeHomeGet `json:"data"`
+			Errors []Error         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18803,8 +19140,8 @@ func ParseGetButtonsResponse(rsp *http.Response) (*GetButtonsResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ButtonGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []ButtonGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -18902,8 +19239,8 @@ func ParseGetButtonResponse(rsp *http.Response) (*GetButtonResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ButtonGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []ButtonGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19001,8 +19338,8 @@ func ParseUpdateButtonResponse(rsp *http.Response) (*UpdateButtonResponse, error
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19100,8 +19437,8 @@ func ParseGetCameraMotionsResponse(rsp *http.Response) (*GetCameraMotionsRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]CameraMotionGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
+			Data   []CameraMotionGet `json:"data"`
+			Errors []Error           `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19199,8 +19536,8 @@ func ParseGetCameraMotionResponse(rsp *http.Response) (*GetCameraMotionResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]CameraMotionGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
+			Data   []CameraMotionGet `json:"data"`
+			Errors []Error           `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19298,8 +19635,8 @@ func ParseUpdateCameraMotionResponse(rsp *http.Response) (*UpdateCameraMotionRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19397,8 +19734,8 @@ func ParseGetContactsResponse(rsp *http.Response) (*GetContactsResponse, error) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ContactGet `json:"data,omitempty"`
-			Errors *[]Error      `json:"errors,omitempty"`
+			Data   []ContactGet `json:"data"`
+			Errors []Error      `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19496,8 +19833,8 @@ func ParseGetContactResponse(rsp *http.Response) (*GetContactResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ContactGet `json:"data,omitempty"`
-			Errors *[]Error      `json:"errors,omitempty"`
+			Data   []ContactGet `json:"data"`
+			Errors []Error      `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19595,8 +19932,8 @@ func ParseUpdateContactResponse(rsp *http.Response) (*UpdateContactResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19694,8 +20031,8 @@ func ParseGetConvenienceAreaMotionsResponse(rsp *http.Response) (*GetConvenience
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ConvenienceAreaMotionGet `json:"data,omitempty"`
-			Errors *[]Error                    `json:"errors,omitempty"`
+			Data   []ConvenienceAreaMotionGet `json:"data"`
+			Errors []Error                    `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19793,8 +20130,8 @@ func ParseGetConvenienceAreaMotionResponse(rsp *http.Response) (*GetConvenienceA
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ConvenienceAreaMotionGet `json:"data,omitempty"`
-			Errors *[]Error                    `json:"errors,omitempty"`
+			Data   []ConvenienceAreaMotionGet `json:"data"`
+			Errors []Error                    `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19892,8 +20229,8 @@ func ParseUpdateConvenienceAreaMotionResponse(rsp *http.Response) (*UpdateConven
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -19991,8 +20328,8 @@ func ParseGetDevicesResponse(rsp *http.Response) (*GetDevicesResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]DeviceGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []DeviceGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20090,8 +20427,8 @@ func ParseDeleteDeviceResponse(rsp *http.Response) (*DeleteDeviceResponse, error
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20189,8 +20526,8 @@ func ParseGetDeviceResponse(rsp *http.Response) (*GetDeviceResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]DeviceGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []DeviceGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20288,8 +20625,8 @@ func ParseUpdateDeviceResponse(rsp *http.Response) (*UpdateDeviceResponse, error
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20387,8 +20724,8 @@ func ParseGetDevicePowersResponse(rsp *http.Response) (*GetDevicePowersResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]DevicePowerGet `json:"data,omitempty"`
-			Errors *[]Error          `json:"errors,omitempty"`
+			Data   []DevicePowerGet `json:"data"`
+			Errors []Error          `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20486,8 +20823,8 @@ func ParseGetDevicePowerResponse(rsp *http.Response) (*GetDevicePowerResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]DevicePowerGet `json:"data,omitempty"`
-			Errors *[]Error          `json:"errors,omitempty"`
+			Data   []DevicePowerGet `json:"data"`
+			Errors []Error          `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20585,8 +20922,8 @@ func ParseGetDeviceSoftwareUpdatesResponse(rsp *http.Response) (*GetDeviceSoftwa
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]DeviceSoftwareUpdateGet `json:"data,omitempty"`
-			Errors *[]Error                   `json:"errors,omitempty"`
+			Data   []DeviceSoftwareUpdateGet `json:"data"`
+			Errors []Error                   `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20684,8 +21021,8 @@ func ParseGetDeviceSoftwareUpdateResponse(rsp *http.Response) (*GetDeviceSoftwar
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]DeviceSoftwareUpdateGet `json:"data,omitempty"`
-			Errors *[]Error                   `json:"errors,omitempty"`
+			Data   []DeviceSoftwareUpdateGet `json:"data"`
+			Errors []Error                   `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20783,8 +21120,8 @@ func ParseUpdateDeviceSoftwareUpdateResponse(rsp *http.Response) (*UpdateDeviceS
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20882,8 +21219,8 @@ func ParseGetEntertainmentsResponse(rsp *http.Response) (*GetEntertainmentsRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]EntertainmentGet `json:"data,omitempty"`
-			Errors *[]Error            `json:"errors,omitempty"`
+			Data   []EntertainmentGet `json:"data"`
+			Errors []Error            `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -20981,8 +21318,8 @@ func ParseGetEntertainmentResponse(rsp *http.Response) (*GetEntertainmentRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]EntertainmentGet `json:"data,omitempty"`
-			Errors *[]Error            `json:"errors,omitempty"`
+			Data   []EntertainmentGet `json:"data"`
+			Errors []Error            `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21080,8 +21417,8 @@ func ParseUpdateEntertainmentResponse(rsp *http.Response) (*UpdateEntertainmentR
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21179,8 +21516,8 @@ func ParseGetEntertainmentConfigurationsResponse(rsp *http.Response) (*GetEntert
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]EntertainmentConfigurationGet `json:"data,omitempty"`
-			Errors *[]Error                         `json:"errors,omitempty"`
+			Data   []EntertainmentConfigurationGet `json:"data"`
+			Errors []Error                         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21278,8 +21615,8 @@ func ParseGetEntertainmentConfigurationResponse(rsp *http.Response) (*GetEnterta
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]EntertainmentConfigurationGet `json:"data,omitempty"`
-			Errors *[]Error                         `json:"errors,omitempty"`
+			Data   []EntertainmentConfigurationGet `json:"data"`
+			Errors []Error                         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21377,8 +21714,8 @@ func ParseUpdateEntertainmentConfigurationResponse(rsp *http.Response) (*UpdateE
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21476,8 +21813,8 @@ func ParseGetGeofenceClientsResponse(rsp *http.Response) (*GetGeofenceClientsRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GeofenceClientGet `json:"data,omitempty"`
-			Errors *[]Error             `json:"errors,omitempty"`
+			Data   []GeofenceClientGet `json:"data"`
+			Errors []Error             `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21575,8 +21912,8 @@ func ParseGetGeofenceClientResponse(rsp *http.Response) (*GetGeofenceClientRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GeofenceClientGet `json:"data,omitempty"`
-			Errors *[]Error             `json:"errors,omitempty"`
+			Data   []GeofenceClientGet `json:"data"`
+			Errors []Error             `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21674,8 +22011,8 @@ func ParseUpdateGeofenceClientResponse(rsp *http.Response) (*UpdateGeofenceClien
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21773,8 +22110,8 @@ func ParseGetGeolocationsResponse(rsp *http.Response) (*GetGeolocationsResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GeolocationGet `json:"data,omitempty"`
-			Errors *[]Error          `json:"errors,omitempty"`
+			Data   []GeolocationGet `json:"data"`
+			Errors []Error          `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21872,8 +22209,8 @@ func ParseGetGeolocationResponse(rsp *http.Response) (*GetGeolocationResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GeolocationGet `json:"data,omitempty"`
-			Errors *[]Error          `json:"errors,omitempty"`
+			Data   []GeolocationGet `json:"data"`
+			Errors []Error          `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -21971,8 +22308,8 @@ func ParseUpdateGeolocationResponse(rsp *http.Response) (*UpdateGeolocationRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22070,8 +22407,8 @@ func ParseGetGroupedLightsResponse(rsp *http.Response) (*GetGroupedLightsRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GroupedLightGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
+			Data   []GroupedLightGet `json:"data"`
+			Errors []Error           `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22169,8 +22506,8 @@ func ParseGetGroupedLightResponse(rsp *http.Response) (*GetGroupedLightResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GroupedLightGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
+			Data   []GroupedLightGet `json:"data"`
+			Errors []Error           `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22268,8 +22605,8 @@ func ParseUpdateGroupedLightResponse(rsp *http.Response) (*UpdateGroupedLightRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22367,8 +22704,8 @@ func ParseGetGroupedLightLevelsResponse(rsp *http.Response) (*GetGroupedLightLev
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GroupedLightLevelGet `json:"data,omitempty"`
-			Errors *[]Error                `json:"errors,omitempty"`
+			Data   []GroupedLightLevelGet `json:"data"`
+			Errors []Error                `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22466,8 +22803,8 @@ func ParseGetGroupedLightLevelResponse(rsp *http.Response) (*GetGroupedLightLeve
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GroupedLightLevelGet `json:"data,omitempty"`
-			Errors *[]Error                `json:"errors,omitempty"`
+			Data   []GroupedLightLevelGet `json:"data"`
+			Errors []Error                `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22565,8 +22902,8 @@ func ParseUpdateGroupedLightLevelResponse(rsp *http.Response) (*UpdateGroupedLig
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22664,8 +23001,8 @@ func ParseGetGroupedMotionsResponse(rsp *http.Response) (*GetGroupedMotionsRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GroupedMotionGet `json:"data,omitempty"`
-			Errors *[]Error            `json:"errors,omitempty"`
+			Data   []GroupedMotionGet `json:"data"`
+			Errors []Error            `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22763,8 +23100,8 @@ func ParseGetGroupedMotionResponse(rsp *http.Response) (*GetGroupedMotionRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]GroupedMotionGet `json:"data,omitempty"`
-			Errors *[]Error            `json:"errors,omitempty"`
+			Data   []GroupedMotionGet `json:"data"`
+			Errors []Error            `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22862,8 +23199,8 @@ func ParseUpdateGroupedMotionResponse(rsp *http.Response) (*UpdateGroupedMotionR
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -22961,8 +23298,8 @@ func ParseGetHomekitsResponse(rsp *http.Response) (*GetHomekitsResponse, error) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]HomekitGet `json:"data,omitempty"`
-			Errors *[]Error      `json:"errors,omitempty"`
+			Data   []HomekitGet `json:"data"`
+			Errors []Error      `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23060,8 +23397,8 @@ func ParseGetHomekitResponse(rsp *http.Response) (*GetHomekitResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]HomekitGet `json:"data,omitempty"`
-			Errors *[]Error      `json:"errors,omitempty"`
+			Data   []HomekitGet `json:"data"`
+			Errors []Error      `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23159,8 +23496,8 @@ func ParseUpdateHomekitResponse(rsp *http.Response) (*UpdateHomekitResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23258,8 +23595,8 @@ func ParseGetLightsResponse(rsp *http.Response) (*GetLightsResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]LightGet `json:"data,omitempty"`
-			Errors *[]Error    `json:"errors,omitempty"`
+			Data   []LightGet `json:"data"`
+			Errors []Error    `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23357,8 +23694,8 @@ func ParseGetLightResponse(rsp *http.Response) (*GetLightResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]LightGet `json:"data,omitempty"`
-			Errors *[]Error    `json:"errors,omitempty"`
+			Data   []LightGet `json:"data"`
+			Errors []Error    `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23456,8 +23793,8 @@ func ParseUpdateLightResponse(rsp *http.Response) (*UpdateLightResponse, error) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23555,8 +23892,8 @@ func ParseGetLightLevelsResponse(rsp *http.Response) (*GetLightLevelsResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]LightLevelGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
+			Data   []LightLevelGet `json:"data"`
+			Errors []Error         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23654,8 +23991,8 @@ func ParseGetLightLevelResponse(rsp *http.Response) (*GetLightLevelResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]LightLevelGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
+			Data   []LightLevelGet `json:"data"`
+			Errors []Error         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23753,8 +24090,8 @@ func ParseUpdateLightLevelResponse(rsp *http.Response) (*UpdateLightLevelRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23852,8 +24189,8 @@ func ParseGetMattersResponse(rsp *http.Response) (*GetMattersResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MatterGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []MatterGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -23951,8 +24288,8 @@ func ParseGetMatterResponse(rsp *http.Response) (*GetMatterResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MatterGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []MatterGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24050,8 +24387,8 @@ func ParseUpdateMatterResponse(rsp *http.Response) (*UpdateMatterResponse, error
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24149,8 +24486,8 @@ func ParseGetMatterFabricsResponse(rsp *http.Response) (*GetMatterFabricsRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MatterFabricGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
+			Data   []MatterFabricGet `json:"data"`
+			Errors []Error           `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24248,8 +24585,8 @@ func ParseGetMatterFabricResponse(rsp *http.Response) (*GetMatterFabricResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MatterFabricGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
+			Data   []MatterFabricGet `json:"data"`
+			Errors []Error           `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24347,8 +24684,8 @@ func ParseUpdateMatterFabricResponse(rsp *http.Response) (*UpdateMatterFabricRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24446,8 +24783,8 @@ func ParseGetMotionSensorsResponse(rsp *http.Response) (*GetMotionSensorsRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MotionGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []MotionGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24545,8 +24882,8 @@ func ParseGetMotionSensorResponse(rsp *http.Response) (*GetMotionSensorResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MotionGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []MotionGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24644,8 +24981,8 @@ func ParseUpdateMotionSensorResponse(rsp *http.Response) (*UpdateMotionSensorRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24743,8 +25080,8 @@ func ParseGetMotionAreaCandidatesResponse(rsp *http.Response) (*GetMotionAreaCan
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MotionAreaCandidateGet `json:"data,omitempty"`
-			Errors *[]Error                  `json:"errors,omitempty"`
+			Data   []MotionAreaCandidateGet `json:"data"`
+			Errors []Error                  `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24842,8 +25179,8 @@ func ParseGetMotionAreaCandidateResponse(rsp *http.Response) (*GetMotionAreaCand
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MotionAreaCandidateGet `json:"data,omitempty"`
-			Errors *[]Error                  `json:"errors,omitempty"`
+			Data   []MotionAreaCandidateGet `json:"data"`
+			Errors []Error                  `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -24941,8 +25278,8 @@ func ParseUpdateMotionAreaCandidateResponse(rsp *http.Response) (*UpdateMotionAr
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25040,8 +25377,8 @@ func ParseGetMotionAreaConfigurationsResponse(rsp *http.Response) (*GetMotionAre
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MotionAreaConfigurationGet `json:"data,omitempty"`
-			Errors *[]Error                      `json:"errors,omitempty"`
+			Data   []MotionAreaConfigurationGet `json:"data"`
+			Errors []Error                      `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25139,8 +25476,8 @@ func ParseGetMotionAreaConfigurationResponse(rsp *http.Response) (*GetMotionArea
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]MotionAreaConfigurationGet `json:"data,omitempty"`
-			Errors *[]Error                      `json:"errors,omitempty"`
+			Data   []MotionAreaConfigurationGet `json:"data"`
+			Errors []Error                      `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25238,8 +25575,8 @@ func ParseUpdateMotionAreaConfigurationResponse(rsp *http.Response) (*UpdateMoti
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25337,8 +25674,8 @@ func ParseGetRelativeRotariesResponse(rsp *http.Response) (*GetRelativeRotariesR
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]RelativeRotaryGet `json:"data,omitempty"`
-			Errors *[]Error             `json:"errors,omitempty"`
+			Data   []RelativeRotaryGet `json:"data"`
+			Errors []Error             `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25436,8 +25773,8 @@ func ParseGetRelativeRotaryResponse(rsp *http.Response) (*GetRelativeRotaryRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]RelativeRotaryGet `json:"data,omitempty"`
-			Errors *[]Error             `json:"errors,omitempty"`
+			Data   []RelativeRotaryGet `json:"data"`
+			Errors []Error             `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25535,8 +25872,8 @@ func ParseUpdateRelativeRotaryResponse(rsp *http.Response) (*UpdateRelativeRotar
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25634,8 +25971,8 @@ func ParseGetRoomsResponse(rsp *http.Response) (*GetRoomsResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]RoomGet `json:"data,omitempty"`
-			Errors *[]Error   `json:"errors,omitempty"`
+			Data   []RoomGet `json:"data"`
+			Errors []Error   `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25733,8 +26070,8 @@ func ParseCreateRoomResponse(rsp *http.Response) (*CreateRoomResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25832,8 +26169,8 @@ func ParseDeleteRoomResponse(rsp *http.Response) (*DeleteRoomResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -25931,8 +26268,8 @@ func ParseGetRoomResponse(rsp *http.Response) (*GetRoomResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]RoomGet `json:"data,omitempty"`
-			Errors *[]Error   `json:"errors,omitempty"`
+			Data   []RoomGet `json:"data"`
+			Errors []Error   `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26030,8 +26367,8 @@ func ParseUpdateRoomResponse(rsp *http.Response) (*UpdateRoomResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26129,8 +26466,8 @@ func ParseGetScenesResponse(rsp *http.Response) (*GetScenesResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]SceneGet `json:"data,omitempty"`
-			Errors *[]Error    `json:"errors,omitempty"`
+			Data   []SceneGet `json:"data"`
+			Errors []Error    `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26228,8 +26565,8 @@ func ParseCreateSceneResponse(rsp *http.Response) (*CreateSceneResponse, error) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26327,8 +26664,8 @@ func ParseDeleteSceneResponse(rsp *http.Response) (*DeleteSceneResponse, error) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26426,8 +26763,8 @@ func ParseGetSceneResponse(rsp *http.Response) (*GetSceneResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]SceneGet `json:"data,omitempty"`
-			Errors *[]Error    `json:"errors,omitempty"`
+			Data   []SceneGet `json:"data"`
+			Errors []Error    `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26525,8 +26862,8 @@ func ParseUpdateSceneResponse(rsp *http.Response) (*UpdateSceneResponse, error) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26624,8 +26961,8 @@ func ParseGetSecurityAreaMotionsResponse(rsp *http.Response) (*GetSecurityAreaMo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]SecurityAreaMotionGet `json:"data,omitempty"`
-			Errors *[]Error                 `json:"errors,omitempty"`
+			Data   []SecurityAreaMotionGet `json:"data"`
+			Errors []Error                 `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26723,8 +27060,8 @@ func ParseGetSecurityAreaMotionResponse(rsp *http.Response) (*GetSecurityAreaMot
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]SecurityAreaMotionGet `json:"data,omitempty"`
-			Errors *[]Error                 `json:"errors,omitempty"`
+			Data   []SecurityAreaMotionGet `json:"data"`
+			Errors []Error                 `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26822,8 +27159,8 @@ func ParseUpdateSecurityAreaMotionResponse(rsp *http.Response) (*UpdateSecurityA
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -26921,8 +27258,8 @@ func ParseGetServiceGroupsResponse(rsp *http.Response) (*GetServiceGroupsRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ServiceGroupGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
+			Data   []ServiceGroupGet `json:"data"`
+			Errors []Error           `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27020,8 +27357,8 @@ func ParseGetServiceGroupResponse(rsp *http.Response) (*GetServiceGroupResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ServiceGroupGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
+			Data   []ServiceGroupGet `json:"data"`
+			Errors []Error           `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27119,8 +27456,8 @@ func ParseUpdateServiceGroupResponse(rsp *http.Response) (*UpdateServiceGroupRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27218,8 +27555,8 @@ func ParseGetSmartScenesResponse(rsp *http.Response) (*GetSmartScenesResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]SmartSceneGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
+			Data   []SmartSceneGet `json:"data"`
+			Errors []Error         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27317,8 +27654,8 @@ func ParseCreateSmartSceneResponse(rsp *http.Response) (*CreateSmartSceneRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27416,8 +27753,8 @@ func ParseDeleteSmartSceneResponse(rsp *http.Response) (*DeleteSmartSceneRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27515,8 +27852,8 @@ func ParseGetSmartSceneResponse(rsp *http.Response) (*GetSmartSceneResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]SmartSceneGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
+			Data   []SmartSceneGet `json:"data"`
+			Errors []Error         `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27614,8 +27951,8 @@ func ParseUpdateSmartSceneResponse(rsp *http.Response) (*UpdateSmartSceneRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27713,8 +28050,8 @@ func ParseGetSpeakersResponse(rsp *http.Response) (*GetSpeakersResponse, error) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]SpeakerGet `json:"data,omitempty"`
-			Errors *[]Error      `json:"errors,omitempty"`
+			Data   []SpeakerGet `json:"data"`
+			Errors []Error      `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27812,8 +28149,8 @@ func ParseGetSpeakerResponse(rsp *http.Response) (*GetSpeakerResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]SpeakerGet `json:"data,omitempty"`
-			Errors *[]Error      `json:"errors,omitempty"`
+			Data   []SpeakerGet `json:"data"`
+			Errors []Error      `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -27911,8 +28248,8 @@ func ParseUpdateSpeakerResponse(rsp *http.Response) (*UpdateSpeakerResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28010,8 +28347,8 @@ func ParseGetTampersResponse(rsp *http.Response) (*GetTampersResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]TamperGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []TamperGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28109,8 +28446,8 @@ func ParseGetTamperResponse(rsp *http.Response) (*GetTamperResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]TamperGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
+			Data   []TamperGet `json:"data"`
+			Errors []Error     `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28208,8 +28545,8 @@ func ParseUpdateTamperResponse(rsp *http.Response) (*UpdateTamperResponse, error
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28307,8 +28644,8 @@ func ParseGetTemperaturesResponse(rsp *http.Response) (*GetTemperaturesResponse,
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]TemperatureGet `json:"data,omitempty"`
-			Errors *[]Error          `json:"errors,omitempty"`
+			Data   []TemperatureGet `json:"data"`
+			Errors []Error          `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28406,8 +28743,8 @@ func ParseGetTemperatureResponse(rsp *http.Response) (*GetTemperatureResponse, e
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]TemperatureGet `json:"data,omitempty"`
-			Errors *[]Error          `json:"errors,omitempty"`
+			Data   []TemperatureGet `json:"data"`
+			Errors []Error          `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28505,8 +28842,8 @@ func ParseUpdateTemperatureResponse(rsp *http.Response) (*UpdateTemperatureRespo
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28604,8 +28941,8 @@ func ParseGetWifiConnectivitiesResponse(rsp *http.Response) (*GetWifiConnectivit
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]WifiConnectivityGet `json:"data,omitempty"`
-			Errors *[]Error               `json:"errors,omitempty"`
+			Data   []WifiConnectivityGet `json:"data"`
+			Errors []Error               `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28703,8 +29040,8 @@ func ParseGetWifiConnectivityResponse(rsp *http.Response) (*GetWifiConnectivityR
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]WifiConnectivityGet `json:"data,omitempty"`
-			Errors *[]Error               `json:"errors,omitempty"`
+			Data   []WifiConnectivityGet `json:"data"`
+			Errors []Error               `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28802,8 +29139,8 @@ func ParseUpdateWifiConnectivityResponse(rsp *http.Response) (*UpdateWifiConnect
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -28901,8 +29238,8 @@ func ParseGetZgpConnectivitiesResponse(rsp *http.Response) (*GetZgpConnectivitie
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ZgpConnectivityGet `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ZgpConnectivityGet `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29000,8 +29337,8 @@ func ParseGetZgpConnectivityResponse(rsp *http.Response) (*GetZgpConnectivityRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ZgpConnectivityGet `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ZgpConnectivityGet `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29099,8 +29436,8 @@ func ParseUpdateZgpConnectivityResponse(rsp *http.Response) (*UpdateZgpConnectiv
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29198,8 +29535,8 @@ func ParseGetZigbeeConnectivitiesResponse(rsp *http.Response) (*GetZigbeeConnect
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ZigbeeConnectivityGet `json:"data,omitempty"`
-			Errors *[]Error                 `json:"errors,omitempty"`
+			Data   []ZigbeeConnectivityGet `json:"data"`
+			Errors []Error                 `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29297,8 +29634,8 @@ func ParseGetZigbeeConnectivityResponse(rsp *http.Response) (*GetZigbeeConnectiv
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ZigbeeConnectivityGet `json:"data,omitempty"`
-			Errors *[]Error                 `json:"errors,omitempty"`
+			Data   []ZigbeeConnectivityGet `json:"data"`
+			Errors []Error                 `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29396,8 +29733,8 @@ func ParseUpdateZigbeeConnectivityResponse(rsp *http.Response) (*UpdateZigbeeCon
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29495,8 +29832,8 @@ func ParseGetZigbeeDeviceDiscoveriesResponse(rsp *http.Response) (*GetZigbeeDevi
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ZigbeeDeviceDiscoveryGet `json:"data,omitempty"`
-			Errors *[]Error                    `json:"errors,omitempty"`
+			Data   []ZigbeeDeviceDiscoveryGet `json:"data"`
+			Errors []Error                    `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29594,8 +29931,8 @@ func ParseGetZigbeeDeviceDiscoveryResponse(rsp *http.Response) (*GetZigbeeDevice
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ZigbeeDeviceDiscoveryGet `json:"data,omitempty"`
-			Errors *[]Error                    `json:"errors,omitempty"`
+			Data   []ZigbeeDeviceDiscoveryGet `json:"data"`
+			Errors []Error                    `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29693,8 +30030,8 @@ func ParseUpdateZigbeeDeviceDiscoveryResponse(rsp *http.Response) (*UpdateZigbee
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29792,8 +30129,8 @@ func ParseGetZonesResponse(rsp *http.Response) (*GetZonesResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]RoomGet `json:"data,omitempty"`
-			Errors *[]Error   `json:"errors,omitempty"`
+			Data   []RoomGet `json:"data"`
+			Errors []Error   `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29891,8 +30228,8 @@ func ParseCreateZoneResponse(rsp *http.Response) (*CreateZoneResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -29990,8 +30327,8 @@ func ParseDeleteZoneResponse(rsp *http.Response) (*DeleteZoneResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -30089,8 +30426,8 @@ func ParseGetZoneResponse(rsp *http.Response) (*GetZoneResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]RoomGet `json:"data,omitempty"`
-			Errors *[]Error   `json:"errors,omitempty"`
+			Data   []RoomGet `json:"data"`
+			Errors []Error   `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -30188,8 +30525,8 @@ func ParseUpdateZoneResponse(rsp *http.Response) (*UpdateZoneResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Data   *[]ResourceIdentifier `json:"data,omitempty"`
-			Errors *[]Error              `json:"errors,omitempty"`
+			Data   []ResourceIdentifier `json:"data"`
+			Errors []Error              `json:"errors"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -30265,6 +30602,105 @@ func ParseUpdateZoneResponse(rsp *http.Response) (*UpdateZoneResponse, error) {
 			return nil, err
 		}
 		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetEventStreamResponse parses an HTTP response from a GetEventStreamWithResponse call
+func ParseGetEventStreamResponse(rsp *http.Response) (*GetEventStreamResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEventStreamResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Event
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	case rsp.StatusCode == 200:
+		// Content-type (text/event-stream) unsupported
 
 	}
 

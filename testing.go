@@ -896,3 +896,8 @@ func (c *ClientWithResponsesMock) UpdateZoneWithResponse(ctx context.Context, zo
 	args := c.Called(ctx, zoneId, body, reqEditors)
 	return args.Get(0).(*UpdateZoneResponse), args.Error(1)
 }
+
+func (c *ClientWithResponsesMock) GetEventStreamWithResponse(ctx context.Context, params *GetEventStreamParams, reqEditors ...RequestEditorFn) (*GetEventStreamResponse, error) {
+	args := c.Called(ctx, params, reqEditors)
+	return args.Get(0).(*GetEventStreamResponse), args.Error(1)
+}

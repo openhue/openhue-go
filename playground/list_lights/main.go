@@ -17,9 +17,9 @@ func main() {
 
 	for id, light := range lights {
 
-		fmt.Printf("> Toggling light %s (%s)\n", *light.Metadata.Name, id)
+		fmt.Printf("> Toggling light %s (%s)\n", light.Metadata.Name, id)
 
-		home.UpdateLight(ctx, *light.Id, openhue.LightPut{
+		home.UpdateLight(ctx, light.Id, openhue.LightPut{
 			On: light.Toggle(),
 		})
 	}

@@ -250,15 +250,24 @@ func TestNewHome_DefaultTimeout(t *testing.T) {
 	assert.NotNil(t, home)
 }
 
-func TestLightGet_IsOnAndToggle_NilSafe(t *testing.T) {
+func TestLightGet_IsOnAndToggle(t *testing.T) {
 	var l LightGet
 	assert.False(t, l.IsOn())
-	assert.True(t, *l.Toggle().On)
+	assert.True(t, l.Toggle().On)
 
-	on := true
-	l.On = &On{On: &on}
+	l.On = On{On: true}
 	assert.True(t, l.IsOn())
-	assert.False(t, *l.Toggle().On)
+	assert.False(t, l.Toggle().On)
+}
+
+func TestGroupedLightGet_IsOnAndToggle_NilSafe(t *testing.T) {
+	var l GroupedLightGet
+	assert.False(t, l.IsOn())
+	assert.True(t, l.Toggle().On)
+
+	l.On = &On{On: true}
+	assert.True(t, l.IsOn())
+	assert.False(t, l.Toggle().On)
 }
 
 func TestGetDevices_NilBody(t *testing.T) {
