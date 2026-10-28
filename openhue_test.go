@@ -278,3 +278,81 @@ func TestGetDevices_NilBody(t *testing.T) {
 	_, err := home.GetDevices(context.Background())
 	assert.ErrorIs(t, err, ErrEmptyResponse)
 }
+
+func TestGetRelativeRotaries(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := GetRelativeRotariesResponse{
+		HTTPResponse: &http.Response{StatusCode: 200},
+		JSON200: &struct {
+			Data   []RelativeRotaryGet `json:"data"`
+			Errors []Error             `json:"errors"`
+		}{Data: []RelativeRotaryGet{{Id: "r1"}, {Id: "r2"}}},
+	}
+	m.On("GetRelativeRotariesWithResponse", mock.Anything, mock.Anything).Return(&resp, nil)
+
+	got, err := home.GetRelativeRotaries(context.Background())
+	require.NoError(t, err)
+	assert.Len(t, got, 2)
+	assert.Equal(t, "r1", got["r1"].Id)
+}
+
+func TestGetRelativeRotaryById(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := GetRelativeRotaryResponse{
+		HTTPResponse: &http.Response{StatusCode: 200},
+		JSON200: &struct {
+			Data   []RelativeRotaryGet `json:"data"`
+			Errors []Error             `json:"errors"`
+		}{Data: []RelativeRotaryGet{{Id: "r1"}}},
+	}
+	m.On("GetRelativeRotaryWithResponse", mock.Anything, "r1", mock.Anything).Return(&resp, nil)
+
+	got, err := home.GetRelativeRotaryById(context.Background(), "r1")
+	require.NoError(t, err)
+	assert.Equal(t, "r1", got.Id)
+}
+
+func TestGetRelativeRotaryById_NotFound(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := GetRelativeRotaryResponse{HTTPResponse: &http.Response{StatusCode: 404}}
+	m.On("GetRelativeRotaryWithResponse", mock.Anything, "x", mock.Anything).Return(&resp, nil)
+
+	_, err := home.GetRelativeRotaryById(context.Background(), "x")
+	assert.True(t, errors.Is(err, ErrNotFound))
+}
+
+func TestUpdateButton(t *testing.T) {
+	home, m := NewTestHome()
+
+	interval := 800
+	body := ButtonPut{Button: &struct {
+		RepeatInterval *int `json:"repeat_interval,omitempty"`
+	}{RepeatInterval: &interval}}
+	resp := UpdateButtonResponse{HTTPResponse: &http.Response{StatusCode: 200}}
+	m.On("UpdateButtonWithResponse", mock.Anything, "b1", body, mock.Anything).Return(&resp, nil)
+
+	require.NoError(t, home.UpdateButton(context.Background(), "b1", body))
+	m.AssertExpectations(t)
+}
+
+func TestUpdateButton_Error(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := UpdateButtonResponse{HTTPResponse: &http.Response{StatusCode: 403}}
+	m.On("UpdateButtonWithResponse", mock.Anything, "b1", mock.Anything, mock.Anything).Return(&resp, nil)
+
+	err := home.UpdateButton(context.Background(), "b1", ButtonPut{})
+	assert.True(t, errors.Is(err, ErrForbidden))
+}
+
+func TestUpdateRelativeRotary(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := UpdateRelativeRotaryResponse{HTTPResponse: &http.Response{StatusCode: 200}}
+	m.On("UpdateRelativeRotaryWithResponse", mock.Anything, "r1", mock.Anything, mock.Anything).Return(&resp, nil)
+
+	require.NoError(t, home.UpdateRelativeRotary(context.Background(), "r1", RelativeRotaryPut{}))
+}

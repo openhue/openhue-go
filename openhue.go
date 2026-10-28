@@ -783,6 +783,79 @@ func (h *Home) GetButtonById(ctx context.Context, buttonId string) (*ButtonGet, 
 	return &data[0], nil
 }
 
+func (h *Home) UpdateButton(ctx context.Context, buttonId string, body ButtonPut) error {
+	resp, err := h.api.UpdateButtonWithResponse(ctx, buttonId, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
+// RELATIVE ROTARY
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetRelativeRotaries(ctx context.Context) (map[string]RelativeRotaryGet, error) {
+	resp, err := h.api.GetRelativeRotariesWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	rotaries := make(map[string]RelativeRotaryGet)
+
+	for _, rotary := range resp.JSON200.Data {
+		rotaries[rotary.Id] = rotary
+	}
+
+	return rotaries, nil
+}
+
+func (h *Home) GetRelativeRotaryById(ctx context.Context, relativeRotaryId string) (*RelativeRotaryGet, error) {
+	resp, err := h.api.GetRelativeRotaryWithResponse(ctx, relativeRotaryId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) UpdateRelativeRotary(ctx context.Context, relativeRotaryId string, body RelativeRotaryPut) error {
+	resp, err := h.api.UpdateRelativeRotaryWithResponse(ctx, relativeRotaryId, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
 //--------------------------------------------------------------------------------------------------------------------//
 // MOTION SENSOR
 //--------------------------------------------------------------------------------------------------------------------//
