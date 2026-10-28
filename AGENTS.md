@@ -80,6 +80,16 @@ make tidy
    - Auto-generated from OpenAPI spec
    - Provides raw API access
 
+### Implementation Notes
+
+- **Wrapper pattern** (`openhue.go`): `Home` holds a `ClientWithResponsesInterface`. Each method calls the generated `...WithResponse`, checks `HTTPResponse.StatusCode`, returns `newApiError(resp)` on failure, then dereferences `JSON200.Data`; list methods return `map[id]Resource`. All methods take `context.Context`.
+- **Errors** (`error.go`, `response_helpers.go`): `ApiError` is built from any generated response via reflection on the `JSON4xx`/`JSON5xx` fields. It supports `errors.Is` against sentinels (`ErrNotFound`, `ErrUnauthorized`, `ErrEmptyResponse`, ...).
+- **TLS** (`certs.go`): the default HTTP client verifies the bridge against embedded Hue root CAs. Never mutate `http.DefaultTransport` or use `InsecureSkipVerify`.
+- **Mock** (`testing.go`): a testify mock implementing the full generated client interface, shipped in the package (`NewTestHome()`). After regeneration adds client methods, the mock must gain matching methods or the package won't compile.
+- **CI** (`.github/workflows/build.yml`): runs `make generate` then `go test -cover ./...`, so wrappers must stay compatible with the latest spec.
+- **`playground/`**: separate Go module (joined via `go.work`) with runnable examples; needs a real bridge.
+- Run a single test with `go test -run TestName ./...`.
+
 ## Important Considerations for AI Agents
 
 ### When Making Changes
