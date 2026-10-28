@@ -18,14 +18,14 @@ func main() {
 
 	for id, room := range rooms {
 
-		fmt.Printf("> Toggling room %s (%s)\n", *room.Metadata.Name, id)
+		fmt.Printf("> Toggling room %s (%s)\n", room.Metadata.Name, id)
 
 		for serviceId, serviceType := range room.GetServices() {
 
 			if serviceType == openhue.ResourceIdentifierRtypeGroupedLight {
 				groupedLight, _ := home.GetGroupedLightById(ctx, serviceId)
 
-				home.UpdateGroupedLight(ctx, *groupedLight.Id, openhue.GroupedLightPut{
+				home.UpdateGroupedLight(ctx, groupedLight.Id, openhue.GroupedLightPut{
 					On: groupedLight.Toggle(),
 				})
 			}

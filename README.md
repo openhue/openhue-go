@@ -19,18 +19,20 @@
 
 ## Features
 
-🏠 **Home Abstraction** — Intuitive entry point to interact with your entire Hue ecosystem  
+🏠 **Home Abstraction** — One entry point for lights, rooms, zones, scenes, sensors, and more  
 🔍 **Bridge Discovery** — Automatic bridge detection via mDNS with URL fallback  
 🔐 **Easy Authentication** — Simplified link button authentication flow  
-💡 **Full API Coverage** — Auto-generated from the [OpenHue API](https://github.com/openhue/openhue-api) specification  
+💡 **Full API Coverage** — Generated from the [OpenHue API](https://github.com/openhue/openhue-api) specification  
 ⚡ **Type-Safe** — Strongly typed Go structs for all Hue resources  
+🔒 **Secure by Default** — Bridge TLS certificates verified against the embedded Hue root CAs  
+🧪 **Testable** — Built-in mock via `NewTestHome()` for unit-testing your own code  
 
 ## Installation
 
-**Requirements:** Go 1.23+
+**Requirements:** Go 1.24+ and a Philips Hue bridge reachable on your network
 
 ```shell
-go get -u github.com/openhue/openhue-go
+go get github.com/openhue/openhue-go
 ```
 
 ## Quick Start
@@ -41,32 +43,43 @@ Toggle all rooms in your home with just a few lines of code:
 package main
 
 import (
+    "context"
     "fmt"
+
     "github.com/openhue/openhue-go"
 )
 
 func main() {
-    home, _ := openhue.NewHome(openhue.LoadConfNoError())
-    rooms, _ := home.GetRooms()
+    home, err := openhue.NewHome(openhue.LoadConfNoError())
+    openhue.CheckErr(err)
+
+    ctx := context.Background()
+    rooms, err := home.GetRooms(ctx)
+    openhue.CheckErr(err)
 
     for id, room := range rooms {
-        fmt.Printf("> Toggling room %s (%s)\n", *room.Metadata.Name, id)
+        fmt.Printf("> Toggling room %s (%s)\n", room.Metadata.Name, id)
 
         for serviceId, serviceType := range room.GetServices() {
             if serviceType == openhue.ResourceIdentifierRtypeGroupedLight {
-                groupedLight, _ := home.GetGroupedLightById(serviceId)
-                home.UpdateGroupedLight(*groupedLight.Id, openhue.GroupedLightPut{
+                groupedLight, err := home.GetGroupedLightById(ctx, serviceId)
+                openhue.CheckErr(err)
+
+                err = home.UpdateGroupedLight(ctx, groupedLight.Id, openhue.GroupedLightPut{
                     On: groupedLight.Toggle(),
                 })
+                openhue.CheckErr(err)
             }
         }
     }
 }
 ```
 
-> [!NOTE]  
-> The `openhue.LoadConf()` function loads configuration from the well-known configuration file.  
+> [!NOTE]
+> `openhue.LoadConfNoError()` returns the bridge IP and API key read from the well-known configuration file
+> (use `openhue.LoadConf()` if you prefer to handle the error yourself).
 > See the [configuration guide](https://www.openhue.io/cli/setup#manual-configuration) for details.
+> No config yet? Follow [Bridge Discovery](#bridge-discovery) and [Authentication](#authentication) below, then pass the values to `openhue.NewHome(ip, apiKey)`.
 
 ## Documentation
 
@@ -86,7 +99,7 @@ The discovery process tries mDNS first, then falls back to [discovery.meethue.co
 
 **Options:**
 - `openhue.WithTimeout(duration)` — Set mDNS discovery timeout (default: 5 seconds)
-- `openhue.WithDisabledUrlDiscovery` — Disable URL fallback discovery
+- `openhue.WithDisabledUrlDiscovery()` — Disable URL fallback discovery
 
 ### Authentication
 
@@ -115,13 +128,95 @@ for len(key) == 0 {
 fmt.Println("\n", key)
 ```
 
+Options for `NewAuthenticator`: `openhue.WithDeviceType(name)` and `openhue.WithGenerateClientKey(bool)`.
+
 The `Authenticate()` function returns:
 - `apiKey` — The API key (non-empty on success)
 - `retry` — `true` if the link button hasn't been pressed yet
 - `err` — Error details if authentication failed
 
 > [!TIP]
-> Authentication has failed when `retry == false` and `err != nil`.
+> Authentication has failed for good when `retry == false` and `err != nil`.
+
+### Creating a Home
+
+```go
+home, err := openhue.NewHome("192.168.1.10", apiKey,
+    openhue.WithRequestTimeout(10*time.Second),
+)
+```
+
+**Options:**
+- `openhue.WithRequestTimeout(duration)` — Set the timeout of requests sent to the bridge
+- `openhue.WithCustomHTTPClient(client)` — Use your own `*http.Client` (for example, to customize TLS or transport)
+
+> [!NOTE]
+> By default, the bridge certificate is verified against the embedded Hue root CAs. `InsecureSkipVerify` is never used.
+
+### Controlling Resources
+
+Every method takes a `context.Context`. List methods return a `map[id]Resource`, and `Get...ById` methods return a pointer to a single resource.
+
+| Resource | Methods |
+|----------|---------|
+| Lights | `GetLights`, `GetLightById`, `UpdateLight` |
+| Grouped lights | `GetGroupedLights`, `GetGroupedLightById`, `UpdateGroupedLight` |
+| Rooms | `GetRooms`, `GetRoomById`, `CreateRoom`, `UpdateRoom`, `DeleteRoom` |
+| Zones | `GetZones`, `GetZoneById`, `CreateZone`, `UpdateZone`, `DeleteZone` |
+| Scenes | `GetScenes`, `GetSceneById`, `CreateScene`, `UpdateScene`, `DeleteScene`, `ActivateScene` |
+| Smart scenes | `GetSmartScenes`, `GetSmartSceneById`, `CreateSmartScene`, `UpdateSmartScene`, `DeleteSmartScene` |
+| Devices | `GetDevices`, `GetDeviceById`, `GetDevicePowers`, `GetDevicePowerById` |
+| Sensors & buttons | `GetMotionSensors`, `GetTemperatureSensors`, `GetButtons` (and `...ById`) |
+| Entertainment | `GetEntertainmentConfigurations`, `StartEntertainment`, `StopEntertainment`, `UpdateEntertainmentConfiguration` |
+| Bridge | `GetBridge`, `GetBridges`, `UpdateBridge`, `GetBridgeHome`, `GetResources` |
+
+Example — list lights and toggle one:
+
+```go
+lights, err := home.GetLights(ctx)
+openhue.CheckErr(err)
+
+for id, light := range lights {
+    fmt.Printf("%s: %s\n", id, light.Metadata.Name)
+
+    err = home.UpdateLight(ctx, id, openhue.LightPut{On: light.Toggle()})
+    openhue.CheckErr(err)
+}
+```
+
+> [!IMPORTANT]
+> Generated types follow the OpenAPI spec: required fields (such as `Id`, `Metadata.Name`, or `On.On`) are plain values, not pointers.
+> If you are upgrading from an earlier version, drop the `*` dereferences (`room.Metadata.Name` instead of `*room.Metadata.Name`).
+
+### Error Handling
+
+Failed API calls return an `*openhue.ApiError` that works with `errors.Is`:
+
+```go
+_, err := home.GetLightById(ctx, "unknown-id")
+if errors.Is(err, openhue.ErrNotFound) {
+    fmt.Println("no such light")
+}
+```
+
+Available sentinels: `ErrUnauthorized`, `ErrForbidden`, `ErrNotFound`, `ErrConflict`, `ErrTooManyRequests`, `ErrInternalServerError`, `ErrServiceUnavailable`, `ErrEmptyResponse`.
+
+### Testing Your Code
+
+`openhue.NewTestHome()` returns a `Home` backed by a [testify](https://github.com/stretchr/testify) mock of the generated client, so you can unit-test code that uses this library without a bridge:
+
+```go
+home, apiMock := openhue.NewTestHome()
+// configure expectations on apiMock, then pass `home` to the code under test
+```
+
+### Examples
+
+Runnable examples live in [`playground/`](./playground) (`authenticate`, `discovery`, `list_lights`, `toggle_lights`, `toggle_rooms`). They require a real bridge.
+
+```shell
+go run ./playground/list_lights
+```
 
 ## Related Projects
 
@@ -133,7 +228,15 @@ The `Authenticate()` function returns:
 
 Contributions are welcome! Feel free to open issues and pull requests.
 
-This project uses [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) for code generation. Most code in `openhue.gen.go` is auto-generated — see the project structure before making changes.
+`openhue.gen.go` is generated by [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) and must **not** be edited by hand. Add features in the hand-written files (`openhue.go`, `helpers.go`, ...).
+
+```shell
+make generate   # regenerate openhue.gen.go from the latest spec (or: make generate spec=./openhue.yaml)
+make test       # run the tests with coverage
+make tidy       # tidy go.mod
+```
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, ...). See [AGENTS.md](./AGENTS.md) for more details on the code layout.
 
 ## License
 

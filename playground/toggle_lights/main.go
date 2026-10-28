@@ -18,6 +18,6 @@ func main() {
 
 	for id, light := range lights {
 
-		fmt.Printf("> Found light %s (%s)\n", *light.Metadata.Name, id)
+		fmt.Printf("> Found light %s (%s)\n", light.Metadata.Name, id)
 	}
 }

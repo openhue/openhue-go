@@ -2,6 +2,7 @@ package openhue
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"testing"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetDevices_Forbidden(t *testing.T) {
@@ -42,14 +44,12 @@ func TestGetDevices_NotFound(t *testing.T) {
 func TestGetDevices_WithErrorDescription(t *testing.T) {
 	home, m := NewTestHome()
 
-	description := "resource not found: device xyz"
+	// Decode from JSON so the test holds whatever Go shape oapi-codegen generates for Errors/Description.
+	notFound := &NotFound{}
+	require.NoError(t, json.Unmarshal([]byte(`{"errors":[{"description":"resource not found: device xyz"}]}`), notFound))
 	resp := GetDevicesResponse{
 		HTTPResponse: &http.Response{StatusCode: 404},
-		JSON404: &NotFound{
-			Errors: &[]Error{
-				{Description: &description},
-			},
-		},
+		JSON404:      notFound,
 	}
 	m.On("GetDevicesWithResponse", mock.Anything, mock.Anything).Return(&resp, nil)
 
@@ -116,16 +116,9 @@ func TestApiError_Is(t *testing.T) {
 func TestGetDeviceById_EmptyResponse(t *testing.T) {
 	home, m := NewTestHome()
 
-	emptyData := []DeviceGet{}
-	resp := GetDeviceResponse{
-		HTTPResponse: &http.Response{StatusCode: 200},
-		JSON200: &struct {
-			Data   *[]DeviceGet `json:"data,omitempty"`
-			Errors *[]Error     `json:"errors,omitempty"`
-		}{
-			Data: &emptyData,
-		},
-	}
+	resp := GetDeviceResponse{HTTPResponse: &http.Response{StatusCode: 200}}
+	// Decode from JSON so the test holds whatever Go shape oapi-codegen generates for Errors.
+	require.NoError(t, json.Unmarshal([]byte(`{"data":[]}`), &resp.JSON200))
 	m.On("GetDeviceWithResponse", mock.Anything, mock.Anything, mock.Anything).Return(&resp, nil)
 
 	_, err := home.GetDeviceById(context.Background(), "some-id")
@@ -136,16 +129,9 @@ func TestGetDeviceById_EmptyResponse(t *testing.T) {
 func TestGetGroupedLightById_EmptyResponse(t *testing.T) {
 	home, m := NewTestHome()
 
-	emptyData := []GroupedLightGet{}
-	resp := GetGroupedLightResponse{
-		HTTPResponse: &http.Response{StatusCode: 200},
-		JSON200: &struct {
-			Data   *[]GroupedLightGet `json:"data,omitempty"`
-			Errors *[]Error           `json:"errors,omitempty"`
-		}{
-			Data: &emptyData,
-		},
-	}
+	resp := GetGroupedLightResponse{HTTPResponse: &http.Response{StatusCode: 200}}
+	// Decode from JSON so the test holds whatever Go shape oapi-codegen generates for Errors.
+	require.NoError(t, json.Unmarshal([]byte(`{"data":[]}`), &resp.JSON200))
 	m.On("GetGroupedLightWithResponse", mock.Anything, mock.Anything, mock.Anything).Return(&resp, nil)
 
 	_, err := home.GetGroupedLightById(context.Background(), "some-id")
@@ -156,16 +142,9 @@ func TestGetGroupedLightById_EmptyResponse(t *testing.T) {
 func TestGetBridgeHome_EmptyResponse(t *testing.T) {
 	home, m := NewTestHome()
 
-	emptyData := []BridgeHomeGet{}
-	resp := GetBridgeHomesResponse{
-		HTTPResponse: &http.Response{StatusCode: 200},
-		JSON200: &struct {
-			Data   *[]BridgeHomeGet `json:"data,omitempty"`
-			Errors *[]Error         `json:"errors,omitempty"`
-		}{
-			Data: &emptyData,
-		},
-	}
+	resp := GetBridgeHomesResponse{HTTPResponse: &http.Response{StatusCode: 200}}
+	// Decode from JSON so the test holds whatever Go shape oapi-codegen generates for Errors.
+	require.NoError(t, json.Unmarshal([]byte(`{"data":[]}`), &resp.JSON200))
 	m.On("GetBridgeHomesWithResponse", mock.Anything, mock.Anything).Return(&resp, nil)
 
 	_, err := home.GetBridgeHome(context.Background())
@@ -269,4 +248,33 @@ func TestNewHome_DefaultTimeout(t *testing.T) {
 	home, err := NewHome("192.168.1.1", "api-key")
 	assert.NoError(t, err)
 	assert.NotNil(t, home)
+}
+
+func TestLightGet_IsOnAndToggle(t *testing.T) {
+	var l LightGet
+	assert.False(t, l.IsOn())
+	assert.True(t, l.Toggle().On)
+
+	l.On = On{On: true}
+	assert.True(t, l.IsOn())
+	assert.False(t, l.Toggle().On)
+}
+
+func TestGroupedLightGet_IsOnAndToggle_NilSafe(t *testing.T) {
+	var l GroupedLightGet
+	assert.False(t, l.IsOn())
+	assert.True(t, l.Toggle().On)
+
+	l.On = &On{On: true}
+	assert.True(t, l.IsOn())
+	assert.False(t, l.Toggle().On)
+}
+
+func TestGetDevices_NilBody(t *testing.T) {
+	home, mockClient := NewTestHome()
+	mockClient.On("GetDevicesWithResponse", mock.Anything, mock.Anything).Return(
+		&GetDevicesResponse{HTTPResponse: &http.Response{StatusCode: http.StatusOK}}, nil)
+
+	_, err := home.GetDevices(context.Background())
+	assert.ErrorIs(t, err, ErrEmptyResponse)
 }

@@ -107,7 +107,10 @@ func (h *Home) GetBridgeHome(ctx context.Context) (*BridgeHomeGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -132,11 +135,14 @@ func (h *Home) GetResources(ctx context.Context) (map[string]ResourceGet, error)
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := *resp.JSON200.Data
 	resources := make(map[string]ResourceGet)
 
 	for _, resource := range data {
-		resources[*resource.Id] = resource
+		resources[resource.Id] = resource
 	}
 
 	return resources, nil
@@ -156,11 +162,14 @@ func (h *Home) GetDevices(ctx context.Context) (map[string]DeviceGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	devices := make(map[string]DeviceGet)
 
 	for _, device := range data {
-		devices[*device.Id] = device
+		devices[device.Id] = device
 	}
 
 	return devices, nil
@@ -176,7 +185,10 @@ func (h *Home) GetDeviceById(ctx context.Context, deviceId string) (*DeviceGet, 
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -198,11 +210,14 @@ func (h *Home) GetRooms(ctx context.Context) (map[string]RoomGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	rooms := make(map[string]RoomGet)
 
 	for _, room := range data {
-		rooms[*room.Id] = room
+		rooms[room.Id] = room
 	}
 
 	return rooms, nil
@@ -218,7 +233,10 @@ func (h *Home) GetRoomById(ctx context.Context, roomId string) (*RoomGet, error)
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -236,7 +254,10 @@ func (h *Home) CreateRoom(ctx context.Context, body RoomPut) (*ResourceIdentifie
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -272,8 +293,8 @@ func (h *Home) DeleteRoom(ctx context.Context, roomId string) error {
 
 func (r *RoomGet) GetServices() map[string]ResourceIdentifierRtype {
 	services := make(map[string]ResourceIdentifierRtype)
-	for _, s := range *r.Services {
-		services[*s.Rid] = *s.Rtype
+	for _, s := range r.Services {
+		services[s.Rid] = s.Rtype
 	}
 	return services
 }
@@ -293,11 +314,14 @@ func (h *Home) GetZones(ctx context.Context) (map[string]RoomGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	zones := make(map[string]RoomGet)
 
 	for _, zone := range data {
-		zones[*zone.Id] = zone
+		zones[zone.Id] = zone
 	}
 
 	return zones, nil
@@ -313,7 +337,10 @@ func (h *Home) GetZoneById(ctx context.Context, zoneId string) (*RoomGet, error)
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -331,7 +358,10 @@ func (h *Home) CreateZone(ctx context.Context, body RoomPut) (*ResourceIdentifie
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -379,11 +409,14 @@ func (h *Home) GetLights(ctx context.Context) (map[string]LightGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	lights := make(map[string]LightGet)
 
 	for _, light := range data {
-		lights[*light.Id] = light
+		lights[light.Id] = light
 	}
 
 	return lights, nil
@@ -399,7 +432,10 @@ func (h *Home) GetLightById(ctx context.Context, lightId string) (*LightGet, err
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -407,13 +443,15 @@ func (h *Home) GetLightById(ctx context.Context, lightId string) (*LightGet, err
 	return &data[0], nil
 }
 
+// IsOn reports whether the light is on.
 func (l *LightGet) IsOn() bool {
-	return *l.On.On
+	return l.On.On
 }
 
+// Toggle returns the On state that flips the light's current state.
 func (l *LightGet) Toggle() *On {
-	v := !(*l.On.On)
-	return &On{On: &v}
+	v := !l.IsOn()
+	return &On{On: v}
 }
 
 func (h *Home) UpdateLight(ctx context.Context, lightId string, body LightPut) error {
@@ -441,11 +479,14 @@ func (h *Home) GetGroupedLights(ctx context.Context) (map[string]GroupedLightGet
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	lights := make(map[string]GroupedLightGet)
 
 	for _, light := range data {
-		lights[*light.Id] = light
+		lights[light.Id] = light
 	}
 
 	return lights, nil
@@ -461,7 +502,10 @@ func (h *Home) GetGroupedLightById(ctx context.Context, groupedLightId string) (
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -469,13 +513,15 @@ func (h *Home) GetGroupedLightById(ctx context.Context, groupedLightId string) (
 	return &data[0], nil
 }
 
+// IsOn reports whether the grouped light is on. A group without state is considered off.
 func (l *GroupedLightGet) IsOn() bool {
-	return *l.On.On
+	return l.On != nil && l.On.On
 }
 
+// Toggle returns the On state that flips the grouped light's current state.
 func (l *GroupedLightGet) Toggle() *On {
-	v := !(*l.On.On)
-	return &On{On: &v}
+	v := !l.IsOn()
+	return &On{On: v}
 }
 
 func (h *Home) UpdateGroupedLight(ctx context.Context, lightId string, body GroupedLightPut) error {
@@ -503,11 +549,14 @@ func (h *Home) GetScenes(ctx context.Context) (map[string]SceneGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	scenes := make(map[string]SceneGet)
 
 	for _, scene := range data {
-		scenes[*scene.Id] = scene
+		scenes[scene.Id] = scene
 	}
 
 	return scenes, nil
@@ -523,7 +572,10 @@ func (h *Home) GetSceneById(ctx context.Context, sceneId string) (*SceneGet, err
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -541,7 +593,10 @@ func (h *Home) CreateScene(ctx context.Context, body ScenePost) (*ResourceIdenti
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -599,11 +654,14 @@ func (h *Home) GetSmartScenes(ctx context.Context) (map[string]SmartSceneGet, er
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	scenes := make(map[string]SmartSceneGet)
 
 	for _, scene := range data {
-		scenes[*scene.Id] = scene
+		scenes[scene.Id] = scene
 	}
 
 	return scenes, nil
@@ -619,7 +677,10 @@ func (h *Home) GetSmartSceneById(ctx context.Context, smartSceneId string) (*Sma
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -637,7 +698,10 @@ func (h *Home) CreateSmartScene(ctx context.Context, body SmartScenePost) (*Reso
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -685,11 +749,14 @@ func (h *Home) GetButtons(ctx context.Context) (map[string]ButtonGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	buttons := make(map[string]ButtonGet)
 
 	for _, button := range data {
-		buttons[*button.Id] = button
+		buttons[button.Id] = button
 	}
 
 	return buttons, nil
@@ -705,7 +772,10 @@ func (h *Home) GetButtonById(ctx context.Context, buttonId string) (*ButtonGet, 
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -727,11 +797,14 @@ func (h *Home) GetMotionSensors(ctx context.Context) (map[string]MotionGet, erro
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	sensors := make(map[string]MotionGet)
 
 	for _, sensor := range data {
-		sensors[*sensor.Id] = sensor
+		sensors[sensor.Id] = sensor
 	}
 
 	return sensors, nil
@@ -747,7 +820,10 @@ func (h *Home) GetMotionSensorById(ctx context.Context, motionSensorId string) (
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -769,11 +845,14 @@ func (h *Home) GetTemperatureSensors(ctx context.Context) (map[string]Temperatur
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	sensors := make(map[string]TemperatureGet)
 
 	for _, sensor := range data {
-		sensors[*sensor.Id] = sensor
+		sensors[sensor.Id] = sensor
 	}
 
 	return sensors, nil
@@ -789,7 +868,10 @@ func (h *Home) GetTemperatureSensorById(ctx context.Context, temperatureId strin
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -811,11 +893,14 @@ func (h *Home) GetEntertainmentConfigurations(ctx context.Context) (map[string]E
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	configs := make(map[string]EntertainmentConfigurationGet)
 
 	for _, config := range data {
-		configs[*config.Id] = config
+		configs[config.Id] = config
 	}
 
 	return configs, nil
@@ -831,7 +916,10 @@ func (h *Home) GetEntertainmentConfigurationById(ctx context.Context, entertainm
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -882,11 +970,14 @@ func (h *Home) GetBridges(ctx context.Context) (map[string]BridgeGet, error) {
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	bridges := make(map[string]BridgeGet)
 
 	for _, bridge := range data {
-		bridges[*bridge.Id] = bridge
+		bridges[bridge.Id] = bridge
 	}
 
 	return bridges, nil
@@ -937,11 +1028,14 @@ func (h *Home) GetDevicePowers(ctx context.Context) (map[string]DevicePowerGet, 
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	powers := make(map[string]DevicePowerGet)
 
 	for _, power := range data {
-		powers[*power.Id] = power
+		powers[power.Id] = power
 	}
 
 	return powers, nil
@@ -957,7 +1051,10 @@ func (h *Home) GetDevicePowerById(ctx context.Context, devicePowerId string) (*D
 		return nil, newApiError(resp)
 	}
 
-	data := *(*resp.JSON200).Data
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
 	if len(data) == 0 {
 		return nil, ErrEmptyResponse
 	}
@@ -989,7 +1086,10 @@ func newClient(bridgeIP, apiKey string, cfg *homeConfig) (*ClientWithResponses, 
 		// timeouts, and HTTP/2 support. Only override TLS configuration.
 		customTransport := http.DefaultTransport.(*http.Transport).Clone()
 		customTransport.TLSClientConfig = &tls.Config{
-			RootCAs: certPool,
+			RootCAs:    certPool,
+			MinVersion: tls.VersionTLS12,
+			// The bridge certificate carries no IP SAN, so the default hostname check cannot succeed.
+			// The chain is instead verified manually against the Hue root CAs in VerifyPeerCertificate.
 			// linter ignore:go/disabled-certificate-check
 			InsecureSkipVerify: true,
 			VerifyPeerCertificate: func(rawCerts [][]byte, verifiedChains [][]*x509.Certificate) error {

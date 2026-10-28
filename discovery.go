@@ -15,6 +15,8 @@ const (
 	defaultTimeout = 5 * time.Second
 	bridgeService  = "_hue._tcp"
 	discoveryUrl   = "https://discovery.meethue.com"
+	// maxDiscoveryBody caps the size of the discovery service response we are willing to read.
+	maxDiscoveryBody = 1 << 20
 )
 
 type discOpt func(b *BridgeDiscovery)
@@ -62,7 +64,7 @@ func (d *BridgeDiscovery) Discover() (*BridgeInfo, error) {
 	bridgeInfo, err := mDNSDiscovery(d.timeout)
 	if err != nil {
 		if d.allowUrlDiscoveryFallback {
-			bridgeInfo, err = urlDiscovery()
+			bridgeInfo, err = urlDiscovery(d.timeout)
 			if err != nil {
 				return nil, err
 			}
@@ -81,7 +83,7 @@ func mDNSDiscovery(timeout time.Duration) (*BridgeInfo, error) {
 	}
 
 	entries := make(chan *zeroconf.ServiceEntry)
-	foundEntry := make(chan *zeroconf.ServiceEntry)
+	foundEntry := make(chan *zeroconf.ServiceEntry, 1)
 	var entry *zeroconf.ServiceEntry
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -93,9 +95,11 @@ func mDNSDiscovery(timeout time.Duration) (*BridgeInfo, error) {
 
 	go func(results <-chan *zeroconf.ServiceEntry, foundEntry chan *zeroconf.ServiceEntry) {
 		for e := range results {
-			if (len(e.AddrIPv4)) > 0 {
-				foundEntry <- e
-				cancel()
+			if len(e.AddrIPv4) > 0 {
+				select {
+				case foundEntry <- e:
+				default: // an entry has already been reported, drain the remaining results
+				}
 			}
 		}
 	}(entries, foundEntry)
@@ -118,8 +122,9 @@ func mDNSDiscovery(timeout time.Duration) (*BridgeInfo, error) {
 	}, nil
 }
 
-func urlDiscovery() (*BridgeInfo, error) {
-	resp, err := http.Get(discoveryUrl)
+func urlDiscovery(timeout time.Duration) (*BridgeInfo, error) {
+	client := &http.Client{Timeout: timeout}
+	resp, err := client.Get(discoveryUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -128,26 +133,26 @@ func urlDiscovery() (*BridgeInfo, error) {
 	if resp.StatusCode == http.StatusTooManyRequests {
 		return nil, TooManyAttempts
 	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("discovery service returned unexpected status %s", resp.Status)
+	}
 
-	bridges := make([]map[string]interface{}, 0)
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
+	var bridges []struct {
+		ID                string `json:"id"`
+		InternalIPAddress string `json:"internalipaddress"`
+	}
+	if err := json.NewDecoder(io.LimitReader(resp.Body, maxDiscoveryBody)).Decode(&bridges); err != nil {
 		return nil, err
 	}
 
-	err = json.Unmarshal(body, &bridges)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(bridges) == 0 {
+	if len(bridges) == 0 || bridges[0].InternalIPAddress == "" {
 		return nil, NotFoundError
 	}
 
 	return &BridgeInfo{
 		Instance:  "N/A",
-		HostName:  fmt.Sprintf("%s", bridges[0]["id"]),
-		IpAddress: fmt.Sprintf("%s", bridges[0]["internalipaddress"]),
+		HostName:  bridges[0].ID,
+		IpAddress: bridges[0].InternalIPAddress,
 	}, nil
 }
 
