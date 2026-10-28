@@ -797,6 +797,66 @@ func (h *Home) UpdateButton(ctx context.Context, buttonId string, body ButtonPut
 }
 
 //--------------------------------------------------------------------------------------------------------------------//
+// BEHAVIOR INSTANCE
+//--------------------------------------------------------------------------------------------------------------------//
+
+func (h *Home) GetBehaviorInstances(ctx context.Context) (map[string]BehaviorInstanceGet, error) {
+	resp, err := h.api.GetBehaviorInstancesWithResponse(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	instances := make(map[string]BehaviorInstanceGet)
+
+	for _, instance := range resp.JSON200.Data {
+		instances[instance.Id] = instance
+	}
+
+	return instances, nil
+}
+
+func (h *Home) GetBehaviorInstanceById(ctx context.Context, behaviorInstanceId string) (*BehaviorInstanceGet, error) {
+	resp, err := h.api.GetBehaviorInstanceWithResponse(ctx, behaviorInstanceId)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return nil, newApiError(resp)
+	}
+
+	if resp.JSON200 == nil || resp.JSON200.Data == nil {
+		return nil, ErrEmptyResponse
+	}
+	data := resp.JSON200.Data
+	if len(data) == 0 {
+		return nil, ErrEmptyResponse
+	}
+
+	return &data[0], nil
+}
+
+func (h *Home) UpdateBehaviorInstance(ctx context.Context, behaviorInstanceId string, body BehaviorInstancePut) error {
+	resp, err := h.api.UpdateBehaviorInstanceWithResponse(ctx, behaviorInstanceId, body)
+	if err != nil {
+		return err
+	}
+
+	if resp.HTTPResponse.StatusCode != http.StatusOK {
+		return newApiError(resp)
+	}
+
+	return nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------//
 // RELATIVE ROTARY
 //--------------------------------------------------------------------------------------------------------------------//
 

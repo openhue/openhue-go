@@ -356,3 +356,70 @@ func TestUpdateRelativeRotary(t *testing.T) {
 
 	require.NoError(t, home.UpdateRelativeRotary(context.Background(), "r1", RelativeRotaryPut{}))
 }
+
+func TestGetBehaviorInstances(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := GetBehaviorInstancesResponse{
+		HTTPResponse: &http.Response{StatusCode: 200},
+		JSON200: &struct {
+			Data   []BehaviorInstanceGet `json:"data"`
+			Errors []Error               `json:"errors"`
+		}{Data: []BehaviorInstanceGet{{Id: "bi1"}, {Id: "bi2"}}},
+	}
+	m.On("GetBehaviorInstancesWithResponse", mock.Anything, mock.Anything).Return(&resp, nil)
+
+	got, err := home.GetBehaviorInstances(context.Background())
+	require.NoError(t, err)
+	assert.Len(t, got, 2)
+	assert.Equal(t, "bi1", got["bi1"].Id)
+}
+
+func TestGetBehaviorInstanceById(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := GetBehaviorInstanceResponse{
+		HTTPResponse: &http.Response{StatusCode: 200},
+		JSON200: &struct {
+			Data   []BehaviorInstanceGet `json:"data"`
+			Errors []Error               `json:"errors"`
+		}{Data: []BehaviorInstanceGet{{Id: "bi1"}}},
+	}
+	m.On("GetBehaviorInstanceWithResponse", mock.Anything, "bi1", mock.Anything).Return(&resp, nil)
+
+	got, err := home.GetBehaviorInstanceById(context.Background(), "bi1")
+	require.NoError(t, err)
+	assert.Equal(t, "bi1", got.Id)
+}
+
+func TestGetBehaviorInstanceById_NotFound(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := GetBehaviorInstanceResponse{HTTPResponse: &http.Response{StatusCode: 404}}
+	m.On("GetBehaviorInstanceWithResponse", mock.Anything, "x", mock.Anything).Return(&resp, nil)
+
+	_, err := home.GetBehaviorInstanceById(context.Background(), "x")
+	assert.True(t, errors.Is(err, ErrNotFound))
+}
+
+func TestUpdateBehaviorInstance(t *testing.T) {
+	home, m := NewTestHome()
+
+	cfg := map[string]interface{}{"buttons": map[string]interface{}{}}
+	body := BehaviorInstancePut{Configuration: &cfg}
+	resp := UpdateBehaviorInstanceResponse{HTTPResponse: &http.Response{StatusCode: 200}}
+	m.On("UpdateBehaviorInstanceWithResponse", mock.Anything, "bi1", body, mock.Anything).Return(&resp, nil)
+
+	require.NoError(t, home.UpdateBehaviorInstance(context.Background(), "bi1", body))
+	m.AssertExpectations(t)
+}
+
+func TestUpdateBehaviorInstance_Error(t *testing.T) {
+	home, m := NewTestHome()
+
+	resp := UpdateBehaviorInstanceResponse{HTTPResponse: &http.Response{StatusCode: 403}}
+	m.On("UpdateBehaviorInstanceWithResponse", mock.Anything, "bi1", mock.Anything, mock.Anything).Return(&resp, nil)
+
+	err := home.UpdateBehaviorInstance(context.Background(), "bi1", BehaviorInstancePut{})
+	assert.True(t, errors.Is(err, ErrForbidden))
+}
