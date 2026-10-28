@@ -98,7 +98,6 @@ func mDNSDiscovery(timeout time.Duration) (*BridgeInfo, error) {
 			if len(e.AddrIPv4) > 0 {
 				select {
 				case foundEntry <- e:
-					cancel()
 				default: // an entry has already been reported, drain the remaining results
 				}
 			}

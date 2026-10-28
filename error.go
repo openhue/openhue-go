@@ -93,8 +93,8 @@ func newApiError(resp apiResponse) error {
 	}
 
 	// Try to extract error description from the response using reflection
-	if errResp := extractErrorFromResponse(resp, statusCode); errResp != nil && errResp.Errors != nil {
-		apiErr.Description = extractErrorDescriptions(*errResp.Errors)
+	if errResp := extractErrorFromResponse(resp, statusCode); errResp != nil {
+		apiErr.Description = extractErrorDescriptions(errorList(errResp.Errors))
 	}
 
 	return apiErr
@@ -114,4 +114,18 @@ func extractErrorDescriptions(errs []Error) string {
 	}
 
 	return strings.Join(descriptions, "; ")
+}
+
+// errorList normalizes ErrorResponse.Errors, which is a *[]Error or a []Error depending on the
+// oapi-codegen version used to generate openhue.gen.go.
+func errorList(v any) []Error {
+	switch errs := v.(type) {
+	case []Error:
+		return errs
+	case *[]Error:
+		if errs != nil {
+			return *errs
+		}
+	}
+	return nil
 }

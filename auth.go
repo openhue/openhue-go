@@ -75,7 +75,7 @@ func (a *authenticatorImpl) Authenticate() (string, bool, error) {
 		return "", true, errors.New(desc)
 	}
 
-	if auth.Success == nil || auth.Success.Username == nil {
+	if auth.Success == nil || auth.Success.Username == nil || *auth.Success.Username == "" {
 		return "", false, errors.New("authentication response did not contain an API key")
 	}
 
